@@ -1,12 +1,11 @@
 import pygame
-import time
 
 def sayhello():
     print("hello world")
 
 class p1():
     def setup():
-        global p1x, p1y, p1hurtbox,crouch, oldp1x, oldp1y, onground, jump, isblocking, qkickout, p1health, WIDTH, HEIGHT, p1gothit,  hitbox, p1framecount, black, yellow, green, red, epunchout
+        global p1x, p1y, p1hurtbox,crouch, oldp1x, oldp1y, knockbacked, xvelocityend, yvelocityend, onground, jump, isblocking, qkickout, p1health, WIDTH, HEIGHT, p1gothit,  hitbox, p1framecount, black, yellow, green, red, epunchout
         size = HEIGHT, WIDTH = 1080, 1920
         p1x, p1y = (WIDTH / 10), (HEIGHT/ 10) * 7
         p1hurtbox = pygame.Rect(540, 240, (WIDTH / 9), (HEIGHT/ 2.5))
@@ -21,6 +20,10 @@ class p1():
         jump = False
         oldp1x = 0
         oldp1y = 0
+
+        knockbacked = False
+        xvelocityend = False
+        yvelocityend = False
 
         black = (0, 0, 0)
         yellow = (255, 255, 0)
@@ -90,6 +93,15 @@ class p1():
         qkickout = True
 
     def yvelocity(speed, destination):
+        global p1y, oldp1y, yvelocityend
+        if oldp1y > destination:
+            p1y = p1y - speed
+            oldp1y = oldp1y - speed
+        if oldp1y <= destination:
+            oldp1y = 0
+            yvelocityend = True
+
+    def jumpvelocity(speed, destination):
         global p1y, onground
         if p1y > destination:
             p1y = p1y - speed
@@ -100,17 +112,16 @@ class p1():
                 onground = False
     
     def xvelocity(speed, destination):
-        global p1x, oldp1x
+        global p1x, oldp1x, xvelocityend
         if oldp1x > destination:
             p1x = p1x - speed
             oldp1x = oldp1x - speed
         if oldp1x <= destination:
             oldp1x = 0
+            xvelocityend = True
             
-
     def jump():
         global HEIGHT, onground, jump
         if onground == True:
-            p1.yvelocity(100, (HEIGHT / 2.5) - 125)
+            p1.jumpvelocity(100, (HEIGHT / 2.5) - 125)
             jump = True
-            

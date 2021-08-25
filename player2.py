@@ -5,13 +5,12 @@ def sayhello():
 
 class p2():
     def setup():
-        global p2x, p2y, p2hurtbox, onground, jump, oldp2x, isblocking, okickout, p2health, WIDTH, HEIGHT, crouch,  upunchout, p2framecount, black, yellow, green, red, hit
+        global p2x, p2y, p2hurtbox, onground,knockbacked, yvelocityend, xvelocityend, jump, oldp2x, oldp2y, isblocking, okickout, p2health, WIDTH, HEIGHT, crouch,  upunchout, p2framecount, black, yellow, green, red
         size = HEIGHT, WIDTH = 1080, 1920
         p2x, p2y = ((WIDTH/ 10) * 9), (HEIGHT/ 10) * 7
         p2hurtbox = pygame.Rect(540, 240, (WIDTH / 9), (HEIGHT/ 2.5))
         p2hurtbox.center = p2x, p2y
         p2health = 100
-        hit = False
         p2framecount = 0
         upunchout = False
         crouch = False
@@ -20,6 +19,11 @@ class p2():
         onground = True
         jump = False
         oldp2x = 0
+        oldp2y = 0
+
+        knockbacked = False
+        yvelocityend = False
+        xvelocityend = False
 
         black = (0, 0, 0)
         yellow = (255, 255, 0)
@@ -89,6 +93,15 @@ class p2():
         okickout = True
 
     def yvelocity(speed, destination):
+        global p2y, onground, oldp2y, yvelocityend
+        if oldp2y > destination:
+            p2y = p2y - speed
+            oldp2y = oldp2y - speed
+        if oldp2y <= destination:
+            oldp2y = 0
+            yvelocityend = True
+            
+    def jumpvelocity(speed, destination):
         global p2y, onground
         if p2y > destination:
             p2y = p2y - speed
@@ -99,16 +112,16 @@ class p2():
                 onground = False
 
     def xvelocity(speed, destination):
-        global p2x, oldp2x
+        global p2x, oldp2x, xvelocityend
         while oldp2x < destination:
             p2x = p2x + speed
             oldp2x = oldp2x + speed
         if oldp2x >= destination:
             oldp2x = 0
+            xvelocityend = True
             
-
     def jump():
         global HEIGHT, onground, jump
         if onground == True:
-            p2.yvelocity(100, (HEIGHT / 2.5) - 125)
+            p2.jumpvelocity(100, (HEIGHT / 2.5) - 125)
             jump = True

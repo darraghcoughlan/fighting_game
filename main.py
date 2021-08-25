@@ -6,7 +6,7 @@ import player1
 import player2
 
 #pygame setup
-size = HEIGHT, WIDTH = 1080, 1920    
+size = HEIGHT, WIDTH = 1920, 1080    
 p1framecount = 0
 p2framecount = 0
 
@@ -56,6 +56,11 @@ qkickinendlag = False
 okickinendlag = False
 qkick = False
 okick = False
+
+epunchknockback = False
+qkickknockback = False
+upunchknockback = False
+okickknockback = False
 
 fps = 60
 
@@ -225,68 +230,69 @@ def p2pushing():
     elif player2.p2hurtbox.colliderect(player1.p1hurtbox):
         player2.p2.move(10)
 
+
+#knockback
+
+def p1knockback(xspeed, xdestination, yspeed, ydestination):
+    player1.p1.yvelocity(yspeed, ydestination)
+    player1.p1.xvelocity(xspeed, xdestination)
+
+def p2knockback(xspeed, xdestination, yspeed, ydestination):
+    player2.p2.yvelocity(yspeed, ydestination)
+    player2.p2.xvelocity(xspeed, xdestination)
+
+
+
 #hitboxes and hitdetection
 #p1 got hit means player 2 got hit
 #p2 got hit means player 1 got hit
 
 def epunchhitbox():
-    global p1gothit
+    global p1gothit, epunchknockback
     pygame.draw.rect(screen, red, player1.hitbox, 0)
     if p1gothit == False:
         if player1.hitbox.colliderect(player2.p2hurtbox):
+            epunchknockback = True
             if player1.crouch == False:
                 player2.p2.takedamage(3)
-                player2.p2.yvelocity(50, -50)
-                player2.p2.xvelocity(10, 100)
             if player1.crouch == True:
                 player2.p2.takedamage(100)
-                player2.p2.yvelocity(100, -200)
-                player2.p2.xvelocity(110, 400)
             p1gothit = True
 
 def qkickhitbox():
-    global p1gothit
+    global p1gothit, qkickknockback
     pygame.draw.rect(screen, red, player1.hitbox, 0)
     if p1gothit == False:
         if player1.hitbox.colliderect(player2.p2hurtbox):
+            qkickknockback = True
             if player1.crouch == False:
                 player2.p2.takedamage(4)
-                player2.p2.yvelocity(50, -50)
-                player2.p2.xvelocity(200, 800)
             if player1.crouch == True:
                 player2.p2.takedamage(2)
-                player2.p2.yvelocity(150, -450)
-                player2.p2.xvelocity(100, 50)
             p1gothit = True
 
 def upunchhitbox():
-    global p2gothit
+    global p2gothit, upunchknockback
     pygame.draw.rect(screen, red, player2.hitbox, 0)
     if p2gothit == False:
         if player2.hitbox.colliderect(player1.p1hurtbox):
+            upunchknockback = True
             if player2.crouch == False:
                 player1.p1.takedamage(3)
-                player1.p1.yvelocity(50, - 50)
-                player1.p1.xvelocity(10, - 100)
             if player2.crouch == True:
                 player1.p1.takedamage(5)
-                player1.p1.yvelocity(100, - 200)
-                player1.p1.xvelocity(110, -400)
             p2gothit = True
 
 def okickhitbox():
-    global p2gothit
+    global p2gothit, okickknockback
     pygame.draw.rect(screen, red, player2.hitbox, 0)
     if p2gothit == False:
         if player2.hitbox.colliderect(player1.p1hurtbox):
+            okickknockback = True
             if player2.crouch == False:
                 player1.p1.takedamage(4)
-                player1.p1.yvelocity(50, -50)
-                player1.p1.xvelocity(200, -800)
             if player2.crouch == True:
                 player1.p1.takedamage(2)
-                player1.p1.yvelocity(150, -450)
-                player1.p1.xvelocity(100, -50)
             p2gothit = True
 
 def player1dies():
@@ -314,7 +320,7 @@ def set_text(string, coordx, coordy, fontSize, color):
 
 while True:
     screen.fill(black)
-    
+    pygame.display.set_caption("fps : " + str(fps))
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -474,6 +480,67 @@ while True:
     if player2.okickout == True:
         okickhitbox()
         okickactive(10)
+
+    #knockback
+    if player2.xvelocityend and player2.yvelocityend == True:
+        player2.knockbacked = True
+        player2.xvelocityend = False
+        player2.yvelocityend = False
+
+    if player1.xvelocityend and player1.yvelocityend == True:
+        player1.knockbacked = True
+        player1.xvelocityend = False
+        player1.yvelocityend = False
+
+    if epunchknockback == True:
+        if player1.crouch == False:
+            p2knockback(10, 100, 50, -50)
+            if player2.knockbacked == True:
+                epunchknockback = False
+                player2.knockbacked = False
+        if player1.crouch == True:
+            p2knockback(110, 400, 100, -200)
+            if player2.knockbacked == True:
+                epunchknockback = False
+                player2.knockbacked = False
+
+    if qkickknockback == True:
+        if player1.crouch == False:
+            p2knockback(200, 800, 50, -50)
+            if player2.knockbacked == True:
+                qkickknockback = False
+                player2.knockbacked = False
+        if player1.crouch == True:
+            p2knockback(100, 50, 150, -450)
+            if player2.knockbacked == True:
+                qkickknockback = False
+                player2.knockbacked = False
+    
+    if upunchknockback == True:
+        if player2.crouch == False:
+            p1knockback(10, -100, 50, -50)
+            if player1.knockbacked == True:
+                upunchknockback = False
+                player1.knockbacked = False
+        if player2.crouch == True:
+            p1knockback(110, -400, 100, -200)
+            if player1.knockbacked == True:
+                upunchknockback = False
+                player1.knockbacked = False
+    
+    if okickknockback == True:
+        if player2.crouch == False:
+            p1knockback(200, -800, 50, -50)
+            if player1.knockbacked == True:
+                okickknockback = False
+                player1.knockbacked = False
+        if player2.crouch == True:
+            p1knockback(100, -50, 150, -450)
+            if player1.knockbacked == True:
+                okickknockback = False
+                player1.knockbacked = False
+
+
 
     #player wins
     if player1wins == True:
