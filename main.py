@@ -1,12 +1,12 @@
-from typing import Text
+
 from pygame.constants import FULLSCREEN, KEYDOWN, KEYUP, KSCAN_ESCAPE, K_ESCAPE
-punch = 0
+
 import time, pygame, time, sys
 import player1
 import player2
 
 #pygame setup
-size = HEIGHT, WIDTH = 1920, 1080
+size = HEIGHT, WIDTH = 1080, 1920    
 p1framecount = 0
 p2framecount = 0
 
@@ -59,6 +59,7 @@ okick = False
 
 fps = 60
 
+player1death = False
 player2death = False
 
 player2wins = False
@@ -288,6 +289,13 @@ def okickhitbox():
                 player1.p1.xvelocity(100, -50)
             p2gothit = True
 
+def player1dies():
+    player1.p1.yvelocity(100, 200)
+    player1.p1.xvelocity(-5, 100)
+    if player1death == True:
+        fps = 60
+
+
 def player2dies():
     player2.p2.yvelocity(100, 200)
     player2.p2.xvelocity(5, 100)
@@ -474,18 +482,21 @@ while True:
         p2inmove = True
         fps = 10
         player2.oldp2x = 0
+        player2.p2.gravity()
         if player2death == False:
             player2dies()
             player2death = True
-        
-        player2.p2.gravity()
-        player2.p2hurtbox = pygame.Rect(player2.p2x, player2.p2y, 435, 215)
-        player2.p2hurtbox.center = player2.p2x, player2.p2y +107
+
     if player2wins == True:
         player2winstext = set_text("PLAYER 2 WINS", 950, 250, 200, white)
         screen.blit(player2winstext[0], player2winstext[1])
         p1inmove = True
-        fps = 20
+        fps = 10
+        player1.oldp1x = 0 
+        player2.p2.gravity()
+        if player1dies == False:
+            player1dies()
+            player1death = True
 
 
     if p1inmove == False:
