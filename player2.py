@@ -5,7 +5,7 @@ def sayhello():
 
 class p2():
     def setup():
-        global p2x, p2y, p2hurtbox, onground,knockbacked, yvelocityend, xvelocityend, jump, oldp2x, oldp2y, isblocking, okickout, p2health, WIDTH, HEIGHT, crouch,  upunchout, p2framecount, black, yellow, green, red
+        global p2x, p2y, p2hurtbox, onground, knockbacked, death,  noknockback, yvelocityend, xvelocityend, jump, oldp2x, oldp2y, isblocking, okickout, p2health, WIDTH, HEIGHT, crouch,  upunchout, p2framecount, black, yellow, green, red
         size = HEIGHT, WIDTH = 1080, 1920
         p2x, p2y = ((WIDTH/ 10) * 9), (HEIGHT/ 10) * 7
         p2hurtbox = pygame.Rect(540, 240, (WIDTH / 9), (HEIGHT/ 2.5))
@@ -20,6 +20,10 @@ class p2():
         jump = False
         oldp2x = 0
         oldp2y = 0
+
+        death = False
+
+        noknockback = False
 
         knockbacked = False
         yvelocityend = False
@@ -57,12 +61,14 @@ class p2():
             p2hurtbox.center = p2x, p2y + 96
 
     def blocking():
-        global isblocking 
+        global isblocking, noknockback
         isblocking = True
+        noknockback = True
 
     def unblocking():
-        global isblocking
+        global isblocking, noknockback
         isblocking = False
+        noknockback = True
 
     def crouch():
         global WIDTH, HEIGHT, p2hurtbox, crouch
@@ -93,7 +99,9 @@ class p2():
         okickout = True
 
     def yvelocity(speed, destination):
-        global p2y, onground, oldp2y, yvelocityend
+        global p2y, onground, oldp2y, yvelocityend, death
+        if death == True:
+            speed = speed / 2
         if oldp2y > destination:
             p2y = p2y - speed
             oldp2y = oldp2y - speed
@@ -112,8 +120,11 @@ class p2():
                 onground = False
 
     def xvelocity(speed, destination):
-        global p2x, oldp2x, xvelocityend
-        while oldp2x < destination:
+        global p2x, oldp2x, xvelocityend, death
+        if death == True:
+            speed = speed / 2
+            destination = (destination / 5) * 7
+        if oldp2x < destination:
             p2x = p2x + speed
             oldp2x = oldp2x + speed
         if oldp2x >= destination:
@@ -125,3 +136,8 @@ class p2():
         if onground == True:
             p2.jumpvelocity(100, (HEIGHT / 2.5) - 125)
             jump = True
+
+    def death():
+        global p2hurtbox, HEIGHT, WIDTH, p2x, p2y
+        p2hurtbox = pygame.Rect(p2x, p2y, (HEIGHT/ 2.5), (WIDTH/ 9))
+        p2hurtbox.center = p2x, p2y + 107
