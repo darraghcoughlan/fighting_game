@@ -4,8 +4,16 @@ from pygame.constants import FULLSCREEN, KEYDOWN, KEYUP, KSCAN_ESCAPE, K_ESCAPE
 import time, pygame, time, sys
 import player1
 import player2
+import timer
+
+
 
 #pygame setup
+numofp1wins = 0
+numofp2wins = 0
+
+
+
 size = HEIGHT, WIDTH = 1920, 1080    
 p1framecount = 0
 p2framecount = 0
@@ -20,13 +28,6 @@ gray = (150, 150, 150)
 blue = (0, 0, 255)
 dimmedblue = (0, 0, 100)
 
-player1died = False
-player2died = False
-
-player2fallover = False
-
-p1deathframecount = 0
-p2deathframecount = 0
 
 p1healthbackgroundshadow = pygame.Rect((WIDTH/ 54), 20, (100*9), 40)
 p1healthbackground = pygame.Rect((WIDTH/ 54)-5, 15, (100 * 9) + 20, 60)
@@ -37,6 +38,32 @@ clock = pygame.time.Clock()
 p1gothit = False
 p2gothit = False
 screen = pygame.display.set_mode(size)
+
+fps = 60
+newtimer = True
+
+def resetvars():
+    global tie, roundover, player1death, player2death, player1wins, player2wins, player1died, player2died, player2fallover, player1fallover, p1deathframecount, p2deathframecount
+    player1died = False
+    player2died = False
+
+    player2fallover = False
+    player1fallover = False
+
+    p1deathframecount = 0
+    p2deathframecount = 0
+
+    player1death = False
+    player2death = False
+
+    player2wins = False
+    player1wins = False
+    tie = False
+
+    roundover = False
+resetvars()
+#timer setup
+timer.timer.setup()
 
 #character setup
 player1.p1.setup()
@@ -68,13 +95,13 @@ qkickknockback = False
 upunchknockback = False
 okickknockback = False
 
-fps = 60
+#mouse
+mouse = pygame.Rect(50, 50, 50, 50)
 
-player1death = False
-player2death = False
-
-player2wins = False
-player1wins = False
+#buttons
+playagainbutton = pygame.Rect(HEIGHT/2, 500, 1000, 250)
+playagainbutton.center = HEIGHT/2, 500
+pressedplayagain = 0
 
 #endlag
 
@@ -225,7 +252,7 @@ def p1pushing():
     elif player1.p1hurtbox.colliderect(player2.p2hurtbox) and p2atedge == True:
         player1.p1.move(-10)
     elif player1.p1hurtbox.colliderect(player2.p2hurtbox):
-        player1.p1.move(-10)
+        player1.p1.move(-20)
 
 def p2pushing():
     global p2moveleft
@@ -234,7 +261,7 @@ def p2pushing():
     elif player2.p2hurtbox.colliderect(player1.p1hurtbox) and p1atedge == True:
         player2.p2.move(10)
     elif player2.p2hurtbox.colliderect(player1.p1hurtbox):
-        player2.p2.move(10)
+        player2.p2.move(20)
 
 
 #knockback
@@ -472,6 +499,7 @@ while True:
         #win condidtion
     if player1.p1health <= 0:
         player2wins = True
+        player1.death = True
 
 
     if player2.p2health <= 0:
@@ -479,7 +507,10 @@ while True:
         player2.death = True
 
     if player2fallover == True:
-        player2.p2.death()
+        player2.p2.fallover_death()
+
+    if player1fallover == True:
+        player1.p1.fallover_death()
 
     #knockback
     if player2.xvelocityend and player2.yvelocityend == True:
@@ -554,6 +585,8 @@ while True:
 
     if player1died == True:
         p1deathframecount = p1deathframecount + 1
+        if p1deathframecount >= 5:
+            player1fallover = True
         if p1deathframecount >= 10:
             p1deathframecount = 0
             fps = 60
@@ -567,21 +600,55 @@ while True:
             p2deathframecount = 0
             fps = 60
             player2died = True
+
+    #timer
+    if roundover == False:
+        timer.timer.count(60)
+        timertext = set_text(str(timer.time), HEIGHT/2, 125, 100, white)
+        screen.blit(timertext[0], timertext[1])
         
+    #timeout / draw
+    if timer.counted == True:
+        tie = True
+        timer.counted = False
 
-
+    if tie == True:
+        tietext = set_text("DRAW", 950, 250, 200, white)
+        screen.blit(tietext[0], tietext[1])
+        roundover = True
     #player wins
     if player1wins == True:
         player1winstext = set_text("PLAYER 1 WINS", 950, 250, 200, white)
         screen.blit(player1winstext[0], player1winstext[1])
-        
-
+        roundover = True
 
     if player2wins == True:
         player2winstext = set_text("PLAYER 2 WINS", 950, 250, 200, white)
         screen.blit(player2winstext[0], player2winstext[1])
+        roundover = True
         
+    #round over
+    if roundover and newtimer == True:
+        timer.time = 0
+        newtimer = False
 
+    if roundover == True:
+        timer.timer.count(5)
+        if timer.counted == True:
+            if player1wins == True:
+                numofp1wins = numofp1wins + 1
+            if player2wins == True:
+                numofp2wins = numofp2wins + 1
+            resetvars()
+            timer.timer.setup()
+            player1.p1.setup()
+            player2.p2.setup()
+            fps = 60 
+            p1inmove = False
+            p2inmove = False
+            newtimer = True
+
+    #drawing
     if p1inmove == False:
         pygame.draw.rect(screen, yellow, player1.p1hurtbox, 2)
     elif p1inmove == True:
@@ -599,8 +666,64 @@ while True:
     pygame.draw.rect(screen, white, p2healthbackground, 0)
     pygame.draw.rect(screen, gray, p2healthbackgroundshadow, 0)
     pygame.draw.rect(screen, red, pygame.Rect(((WIDTH/54) * 50) + ((100 * 9) - player2.p2health * 9), 20, player2.p2health * 9, 40), 0)
+    pygame.draw.circle(screen, white, (75, 125), 30, 0)
+    pygame.draw.circle(screen, white, (150, 125), 30, 0)
+    pygame.draw.circle(screen, white, (1845, 125), 30, 0)
+    pygame.draw.circle(screen, white, (1770, 125), 30, 0)
+    if numofp1wins >=1:
+        pygame.draw.circle(screen, yellow, (75,125), 25, 0)
+    if numofp1wins >= 2:
+        pygame.draw.circle(screen, yellow, (150, 125), 25, 0)
 
+    if numofp2wins >= 1:
+        pygame.draw.circle(screen, blue, (1845, 125), 25, 0)
+    if numofp2wins >= 2:
+        pygame.draw.circle(screen, blue, (1770, 125), 25, 0)
    
+    if numofp1wins >= 2 or numofp2wins >= 2:
+        screen.fill(black)
+        if numofp1wins >= 2:
+            screen.blit(player1winstext[0], player1winstext[1])
+        if numofp2wins >= 2:
+            screen.blit(player2winstext[0], player2winstext[1])
+        if event.type == pygame.MOUSEMOTION:
+            mousex, mousey = event.pos
+            mouse.center = event.pos
+
+        pressingplayagain = mouse.colliderect(playagainbutton)
+
+        if pressingplayagain == True and pressedplayagain < 1000:
+            pressedplayagain = pressedplayagain + 10
+        if pressingplayagain == False and pressedplayagain > 0:
+            pressedplayagain = pressedplayagain - 10
+
+        playagainfill = pygame.Rect((HEIGHT/ 2) - 500, 500, pressedplayagain, 250)
+        playagainfill.centery = 500
+
+        pygame.draw.rect(screen, gray, playagainfill, 0)
+        pygame.draw.rect(screen, white, mouse, 2)
+        pygame.draw.rect(screen, white, playagainbutton, 2)
+        infotext = set_text("play again", HEIGHT/2, 500, 200, white)
+        screen.blit(infotext[0], infotext[1])
+
+    
+
+        #play again
+    if pressedplayagain >= 1000:
+        resetvars()
+        timer.timer.setup()
+        player1.p1.setup()
+        player2.p2.setup()
+        fps = 60
+        p1inmove = False
+        p2inmove = False
+        numofp1wins = 0
+        numofp2wins = 0
+        pressedplayagain = 0
+        p1gothit = False
+        p2gothit = False
+        newtimer = True
+        
     pygame.display.flip()
     p2atedge = False
     

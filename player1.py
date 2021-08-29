@@ -5,7 +5,7 @@ def sayhello():
 
 class p1():
     def setup():
-        global p1x, p1y, p1hurtbox,crouch, noknockback, oldp1x, oldp1y, knockbacked, xvelocityend, yvelocityend, onground, jump, isblocking, qkickout, p1health, WIDTH, HEIGHT, p1gothit,  hitbox, p1framecount, black, yellow, green, red, epunchout
+        global p1x, p1y, p1hurtbox,crouch, noknockback, death, oldp1x, oldp1y, knockbacked, xvelocityend, yvelocityend, onground, jump, isblocking, qkickout, p1health, WIDTH, HEIGHT, p1gothit,  hitbox, p1framecount, black, yellow, green, red, epunchout
         size = HEIGHT, WIDTH = 1080, 1920
         p1x, p1y = (WIDTH / 10), (HEIGHT/ 10) * 7
         p1hurtbox = pygame.Rect(540, 240, (WIDTH / 9), (HEIGHT/ 2.5))
@@ -20,6 +20,8 @@ class p1():
         jump = False
         oldp1x = 0
         oldp1y = 0
+
+        death = False
 
         noknockback = False
 
@@ -98,6 +100,8 @@ class p1():
 
     def yvelocity(speed, destination):
         global p1y, oldp1y, yvelocityend
+        if death == True:
+            speed = speed / 2
         if oldp1y > destination:
             p1y = p1y - speed
             oldp1y = oldp1y - speed
@@ -116,7 +120,10 @@ class p1():
                 onground = False
     
     def xvelocity(speed, destination):
-        global p1x, oldp1x, xvelocityend
+        global p1x, oldp1x, xvelocityend, death
+        if death == True:
+            speed = speed / 2
+            destination = (destination/ 5) *7
         if oldp1x > destination:
             p1x = p1x - speed
             oldp1x = oldp1x - speed
@@ -129,3 +136,8 @@ class p1():
         if onground == True:
             p1.jumpvelocity(100, (HEIGHT / 2.5) - 125)
             jump = True
+
+    def fallover_death():
+        global p1hurtbox, HEIGHT, WIDTH, p1x, p1y
+        p1hurtbox = pygame.Rect(p1x, p1y, (HEIGHT/ 2.5), (WIDTH/9))
+        p1hurtbox.center = p1x, p1y + 107

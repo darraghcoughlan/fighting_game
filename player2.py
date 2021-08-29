@@ -137,7 +137,7 @@ class p2():
             p2.jumpvelocity(100, (HEIGHT / 2.5) - 125)
             jump = True
 
-    def death():
+    def fallover_death():
         global p2hurtbox, HEIGHT, WIDTH, p2x, p2y
         p2hurtbox = pygame.Rect(p2x, p2y, (HEIGHT/ 2.5), (WIDTH/ 9))
         p2hurtbox.center = p2x, p2y + 107
