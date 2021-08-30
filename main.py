@@ -616,6 +616,7 @@ while True:
         tietext = set_text("DRAW", 950, 250, 200, white)
         screen.blit(tietext[0], tietext[1])
         roundover = True
+
     #player wins
     if player1wins == True:
         player1winstext = set_text("PLAYER 1 WINS", 950, 250, 200, white)
@@ -670,6 +671,7 @@ while True:
     pygame.draw.circle(screen, white, (150, 125), 30, 0)
     pygame.draw.circle(screen, white, (1845, 125), 30, 0)
     pygame.draw.circle(screen, white, (1770, 125), 30, 0)
+
     if numofp1wins >=1:
         pygame.draw.circle(screen, yellow, (75,125), 25, 0)
     if numofp1wins >= 2:
@@ -728,4 +730,4 @@ while True:
     p2atedge = False
     
     
-    clock.tick(fps)
+    clock.tick(fps) 
