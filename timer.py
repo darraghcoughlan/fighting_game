@@ -16,3 +16,19 @@ class timer():
             time = time + 1
         if time >= countto:
             counted = True
+
+    def setupcountdown(countfrom):
+        global countdowntime, countdownframecount, go
+        countdowntime = countfrom
+        countdownframecount = 0
+        go = False
+
+    def countdown(countfrom):
+        global countdowntime, countdownframecount, counted, go
+        countdownframecount = countdownframecount +1
+        if countdownframecount >= 60:
+            countdownframecount = 0
+            countdowntime = countdowntime - 1
+        if countdowntime == 0:
+            counted = True
+            go = True

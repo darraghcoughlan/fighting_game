@@ -82,20 +82,32 @@ class p1():
         p1hurtbox.center = p1x, p1y
         crouch = False
 
-    def epunch():
+    def epunch(p1facing):
         global epunchout, hitbox, crouch
-        if crouch == False:
-            hitbox = pygame.Rect(p1hurtbox.centerx, p1hurtbox.centery - 85, 250, 50)
-        if crouch == True:
-            hitbox = pygame.Rect(p1hurtbox.centerx,p1hurtbox.centery - 85, 225, 50)
+        if p1facing == 1:
+            if crouch == False:
+                hitbox = pygame.Rect(p1hurtbox.centerx, p1hurtbox.centery - 85, 250, 50)
+            if crouch == True:
+                hitbox = pygame.Rect(p1hurtbox.centerx,p1hurtbox.centery - 85, 225, 50)
+        if p1facing == 0:
+            if crouch == False:
+                hitbox = pygame.Rect(p1hurtbox.centerx - 250, p1hurtbox.centery - 85,225, 50)
+            if crouch == True:
+                hitbox = pygame.Rect(p1hurtbox.centerx - 225, p1hurtbox.centery - 85, 225, 50)
         epunchout = True
     
-    def qkick():
+    def qkick(p1facing):
         global qkickout, hitbox, crouch
-        if crouch == False:
-            hitbox = pygame.Rect(p1hurtbox.centerx, p1hurtbox.centery + 20, 300, 75)
-        if crouch == True:
-            hitbox = pygame.Rect(p1hurtbox.centerx, p1hurtbox.centery + 65, 350, 50)
+        if p1facing == 1:
+            if crouch == False:
+                hitbox = pygame.Rect(p1hurtbox.centerx, p1hurtbox.centery + 20, 300, 75)
+            if crouch == True:
+                hitbox = pygame.Rect(p1hurtbox.centerx, p1hurtbox.centery + 65, 350, 50)
+        if p1facing == 0:
+            if crouch == False:
+                hitbox = pygame.Rect(p1hurtbox.centerx - 300, p1hurtbox.centery + 20, 300, 75)
+            if crouch == True:
+                hitbox = pygame.Rect(p1hurtbox.centerx - 350, p1hurtbox.centery + 65, 350, 50)
         qkickout = True
 
     def yvelocity(speed, destination):
@@ -134,7 +146,7 @@ class p1():
     def jump():
         global HEIGHT, onground, jump
         if onground == True:
-            p1.jumpvelocity(100, (HEIGHT / 2.5) - 125)
+            p1.jumpvelocity(75, (HEIGHT/ 8))
             jump = True
 
     def fallover_death():

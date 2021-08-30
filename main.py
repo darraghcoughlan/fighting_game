@@ -13,8 +13,7 @@ numofp1wins = 0
 numofp2wins = 0
 
 
-
-size = HEIGHT, WIDTH = 1920, 1080    
+size = WIDTH, HEIGHT = 1920, 1080    
 p1framecount = 0
 p2framecount = 0
 
@@ -29,10 +28,10 @@ blue = (0, 0, 255)
 dimmedblue = (0, 0, 100)
 
 
-p1healthbackgroundshadow = pygame.Rect((WIDTH/ 54), 20, (100*9), 40)
-p1healthbackground = pygame.Rect((WIDTH/ 54)-5, 15, (100 * 9) + 20, 60)
-p2healthbackground = pygame.Rect(((WIDTH/ 54) * 50) - 15 , 15, (100 * 9) + 20, 60)
-p2healthbackgroundshadow = pygame.Rect((WIDTH/ 54) * 50, 20, 100 * 9, 40)
+p1healthbackgroundshadow = pygame.Rect((HEIGHT/ 54), 20, (100*9), 40)
+p1healthbackground = pygame.Rect((HEIGHT/ 54)-5, 15, (100 * 9) + 20, 60)
+p2healthbackground = pygame.Rect(((HEIGHT/ 54) * 50) - 15 , 15, (100 * 9) + 20, 60)
+p2healthbackgroundshadow = pygame.Rect((HEIGHT/ 54) * 50, 20, 100 * 9, 40)
 
 clock = pygame.time.Clock()
 p1gothit = False
@@ -43,7 +42,7 @@ fps = 60
 newtimer = True
 
 def resetvars():
-    global tie, roundover, player1death, player2death, player1wins, player2wins, player1died, player2died, player2fallover, player1fallover, p1deathframecount, p2deathframecount
+    global tie, roundover, p1facing, p2facing, player1death,roundstart, player2death, player1wins, player2wins, player1died, player2died, player2fallover, player1fallover, p1deathframecount, p2deathframecount
     player1died = False
     player2died = False
 
@@ -60,7 +59,13 @@ def resetvars():
     player1wins = False
     tie = False
 
+    roundstart = True
     roundover = False
+
+    #1 for right 0 for left
+    p1facing = 1
+    p2facing = 0
+    timer.timer.setupcountdown(3)
 resetvars()
 #timer setup
 timer.timer.setup()
@@ -99,9 +104,20 @@ okickknockback = False
 mouse = pygame.Rect(50, 50, 50, 50)
 
 #buttons
-playagainbutton = pygame.Rect(HEIGHT/2, 500, 1000, 250)
-playagainbutton.center = HEIGHT/2, 500
+playagainbutton = pygame.Rect(WIDTH/2, 500, 1000, 250)
+playagainbutton.center = WIDTH/2, 500
 pressedplayagain = 0
+
+#facing eachother (1 for right 0 for left)
+def facing():
+    global p1facing, p2facing
+    if player1.p1x > player2.p2x:
+        p1facing = 0
+        p2facing = 1
+    if player2.p2x > player1.p1x:
+        p1facing = 1
+        p2facing = 0
+
 
 #endlag
 
@@ -182,34 +198,34 @@ def okickactive(activeframes):
 #startup
 
 def epunchstartup(startupframes):
-    global p1framecount, epunch, p1inmove
+    global p1framecount, epunch, p1inmove, p1facing
     p1framecount = p1framecount + 1
     if p1framecount >= startupframes:
-        player1.p1.epunch()
+        player1.p1.epunch(p1facing)
         p1framecount = 0
         epunch = False
 
 def qkickstartup(startupframes):
-    global p1framecount, qkick, p1inmove
+    global p1framecount, qkick, p1inmove, p1facing
     p1framecount = p1framecount + 1
     if p1framecount >= startupframes:
-        player1.p1.qkick()
+        player1.p1.qkick(p1facing)
         p1framecount = 0
         qkick = False
 
 def upunchstartup(startupframes):
-    global p2framecount, upunch, p2inmove
+    global p2framecount, upunch, p2inmove, p2facing
     p2framecount = p2framecount + 1
     if p2framecount >= startupframes:
-        player2.p2.upunch()
+        player2.p2.upunch(p2facing)
         p2framecount = 0
         upunch = False
 
 def okickstartup(startupframes):
-    global p2framecount, okick, p2inmove
+    global p2framecount, okick, p2inmove, p2facing
     p2framecount = p2framecount + 1
     if p2framecount >= startupframes:
-        player2.p2.okick()
+        player2.p2.okick(p2facing)
         p2framecount = 0
         okick = False
 
@@ -217,55 +233,63 @@ def okickstartup(startupframes):
 #pushing and bounding arena
 def p1stayin():
     global p1atedge
-    p1stayinleftx = player1.p1x - (WIDTH/ 9)
-    p1stayinrightx = player1.p1x + (WIDTH/ 9)
-    if p1stayinleftx <= 0:
+    p1stayinleftx = player1.p1x - (WIDTH/ 9)/2
+    p1stayinrightx = player1.p1x + (WIDTH/ 9)/2
+    if p1stayinleftx <= 10:
         player1.p1.move(10)
         p1atedge = True
-    if p1stayinrightx >= 1920:
-        player1.p1.move(-10) 
-    if p1stayinleftx <= 0:
+    if p1stayinrightx >= WIDTH - 10:
+        player1.p1.move(-10)
         p1atedge = True
-    if p1stayinrightx >= 1910:
-        p1atedge = True
-    elif p1stayinleftx >= 10:
+    elif p1stayinleftx >= 30 and p1stayinrightx <= WIDTH - 30:
         p1atedge = False
+
 
 def p2stayin():
     global p2atedge
-    p2stayinleftx = player2.p2x - (WIDTH/ 9)
-    p2stayinrightx = player2.p2x + (WIDTH/ 9)
-    if p2stayinleftx <= 0:
-        player2.p2.move(10)
-    if p2stayinrightx >= 1920:
-        player2.p2.move(-10)
+    p2stayinleftx = player2.p2x - (WIDTH/9)/2
+    p2stayinrightx = player2.p2x + (WIDTH/9)/2
     if p2stayinleftx <= 10:
+        player2.p2.move(10)
         p2atedge = True
-    if p2stayinrightx >= 1910:
+    if p2stayinrightx >= WIDTH - 10:
+        player2.p2.move(-10)
         p2atedge = True
+    elif p2stayinleftx >= 30 and p2stayinrightx <= WIDTH - 30:
+        p2atedge = False
+
 
 
 def p1pushing():
-    global p1moveright
-    if player1.p1hurtbox.colliderect(player2.p2hurtbox) and p1moveright == True and p2atedge == False:
-        player2.p2.move(10)
-    elif player1.p1hurtbox.colliderect(player2.p2hurtbox) and p2atedge == True:
-        player1.p1.move(-10)
-    elif player1.p1hurtbox.colliderect(player2.p2hurtbox):
-        player1.p1.move(-20)
+    global p1moveright, p1moveleft, p2atedge, p2moveright, p2moveleft, p1facing
+    if p1facing == 1:
+        if player1.p1hurtbox.colliderect(player2.p2hurtbox) == True and p2atedge == True:
+            player1.p1.move(-10)
+        elif player1.p1hurtbox.colliderect(player2.p2hurtbox) == True and p1moveright == True:
+            player2.p2.move(10)
+    if p1facing == 0:
+        if player1.p1hurtbox.colliderect(player2.p2hurtbox) == True and p2atedge == True:
+            player1.p1.move(10)
+        elif player1.p1hurtbox.colliderect(player2.p2hurtbox) == True and p1moveleft == True:
+            player2.p2.move(-10)
+        
+    
 
 def p2pushing():
-    global p2moveleft
-    if player2.p2hurtbox.colliderect(player1.p1hurtbox) and p2moveleft == True and p1atedge == False:
-        player1.p1.move(-10)
-    elif player2.p2hurtbox.colliderect(player1.p1hurtbox) and p1atedge == True:
-        player2.p2.move(10)
-    elif player2.p2hurtbox.colliderect(player1.p1hurtbox):
-        player2.p2.move(20)
+    global p2moveleft, p2moveright, p1moveleft, p1moveright, p1atedge, p2facing
+    if p2facing == 1:
+        if player2.p2hurtbox.colliderect(player1.p1hurtbox) == True and p1atedge == True:
+            player2.p2.move(-10)
+        elif player2.p2hurtbox.colliderect(player1.p1hurtbox) == True and p2moveright == True:
+            player1.p1.move(10)
+    if p2facing == 0:
+        if player2.p2hurtbox.colliderect(player1.p1hurtbox) == True and p1atedge == True:
+            player2.p2.move(10)
+        elif player2.p2hurtbox.colliderect(player1.p1hurtbox) == True and p2moveleft == True:
+            player1.p1.move(-10)
 
 
 #knockback
-
 def p1knockback(xspeed, xdestination, yspeed, ydestination):
     player1.p1.yvelocity(yspeed, ydestination)
     player1.p1.xvelocity(xspeed, xdestination)
@@ -285,7 +309,8 @@ def epunchhitbox():
     pygame.draw.rect(screen, red, player1.hitbox, 0)
     if p1gothit == False:
         if player1.hitbox.colliderect(player2.p2hurtbox):
-            epunchknockback = True
+            if player2.noknockback == False:
+                epunchknockback = True
             if player1.crouch == False:
                 player2.p2.takedamage(100)
             if player1.crouch == True:
@@ -297,7 +322,8 @@ def qkickhitbox():
     pygame.draw.rect(screen, red, player1.hitbox, 0)
     if p1gothit == False:
         if player1.hitbox.colliderect(player2.p2hurtbox):
-            qkickknockback = True
+            if player2.noknockback == False:
+                qkickknockback = True
             if player1.crouch == False:
                 player2.p2.takedamage(4)
             if player1.crouch == True:
@@ -309,7 +335,8 @@ def upunchhitbox():
     pygame.draw.rect(screen, red, player2.hitbox, 0)
     if p2gothit == False:
         if player2.hitbox.colliderect(player1.p1hurtbox):
-            upunchknockback = True
+            if player1.noknockback == False:
+                upunchknockback = True
             if player2.crouch == False:
                 player1.p1.takedamage(100)
             if player2.crouch == True:
@@ -321,7 +348,8 @@ def okickhitbox():
     pygame.draw.rect(screen, red, player2.hitbox, 0)
     if p2gothit == False:
         if player2.hitbox.colliderect(player1.p1hurtbox):
-            okickknockback = True
+            if player1.noknockback == False:
+                okickknockback = True
             if player2.crouch == False:
                 player1.p1.takedamage(4)
             if player2.crouch == True:
@@ -356,10 +384,15 @@ while True:
             
             #player 1 movement and moves
             if event.key == pygame.K_d:
-                p1moveright = True
+                if p1moveleft == False:
+                    p1moveright = True
+                    if p1facing == 0:
+                        player1.p1.blocking()
             if event.key == pygame.K_a:
-                p1moveleft = True
-                player1.p1.blocking()
+                if p1moveright == False:
+                    p1moveleft = True
+                    if p1facing == 1:
+                        player1.p1.blocking()
             if event.key == pygame.K_s:
                 if player1.onground == True:
                     p1crouch = True
@@ -374,10 +407,15 @@ while True:
            
             #player 2 movement and moves
             if event.key == pygame.K_l:
-                p2moveright = True
-                player2.p2.blocking()
+                if p2moveleft == False:
+                    p2moveright = True
+                    if p2facing == 0:
+                        player2.p2.blocking()
             if event.key == pygame.K_j:
-                p2moveleft = True
+                if p2moveright == False:
+                    p2moveleft = True
+                    if p2facing == 1:
+                        player2.p2.blocking()
             if event.key == pygame.K_k:
                 if player2.onground == True:
                     p2crouch = True
@@ -392,16 +430,22 @@ while True:
         elif event.type == KEYUP:
             if event.key == pygame.K_d:
                 p1moveright = False
+                if p1facing == 0:
+                    player1.p1.unblocking()
             if event.key == pygame.K_a:
                 p1moveleft = False
-                player1.p1.unblocking()
+                if p1facing == 1:
+                    player1.p1.unblocking()
             if event.key == pygame.K_s:
                 p1crouch = False
             if event.key == pygame.K_l:
                 p2moveright = False
-                player2.p2.unblocking()
+                if p2facing == 0:
+                    player2.p2.unblocking()
             if event.key == pygame.K_j:
                 p2moveleft = False
+                if p2facing == 1:
+                    player2.p2.unblocking()
             if event.key == pygame.K_k:
                 p2crouch = False
             if event.key == pygame.K_w:
@@ -414,9 +458,15 @@ while True:
     #player 1 move and crouch
     if p1inmove == False:
         if p1moveright == True:
-            player1.p1.move(10)
+            if p1facing == 1:
+                player1.p1.move(10)
+            if p1facing == 0:
+                player1.p1.move(5)
         if p1moveleft == True:
-            player1.p1.move(-5)
+            if p1facing == 0:
+                player1.p1.move(-10)
+            if p1facing == 1:
+                player1.p1.move(-5)
         if p1crouch == True:
             player1.p1.crouch()
         if p1jump == True:
@@ -434,9 +484,15 @@ while True:
     if p2inmove == False:
         #player 2 move and crouch
         if p2moveright == True:
-            player2.p2.move(5)
+            if p2facing == 1:
+                player2.p2.move(10)
+            if p2facing == 0:
+                player2.p2.move(5)
         if p2moveleft == True:
-            player2.p2.move(-10)
+            if p2facing == 1:
+                player2.p2.move(-5)
+            if p2facing == 0:
+                player2.p2.move(-10)
         if p2crouch == True:
             player2.p2.crouch()
         if p2jump == True:
@@ -451,10 +507,30 @@ while True:
         p2inmove = True
         okickstartup(10)
 
+
+    #roundstart/ countdown
+    if roundstart == True:
+        timer.timer.countdown(3)
+        countdowntext = set_text(str(timer.countdowntime), WIDTH/2, HEIGHT/2, 100, white)
+        screen.blit(countdowntext[0], countdowntext[1])
+        p1inmove = True
+        p2inmove = True
+        if timer.counted == True:
+            roundstart = False
+            timer.counted = False
+            p1inmove = False
+            p2inmove = False
     
+    if timer.go == True and timer.time <= 1 and roundover == False:
+        gotext = set_text("FIGHT!!", WIDTH/2, HEIGHT/2, 200, white)
+        screen.blit(gotext[0], gotext[1])
+
+
+
     #pushing and bouding and gravity
     player1.p1.gravity()
     player2.p2.gravity()
+    facing()
     p1stayin()
     p2stayin()
     p1pushing()
@@ -602,9 +678,9 @@ while True:
             player2died = True
 
     #timer
-    if roundover == False:
+    if roundover == False and roundstart == False:
         timer.timer.count(60)
-        timertext = set_text(str(timer.time), HEIGHT/2, 125, 100, white)
+        timertext = set_text(str(timer.time), WIDTH/2, 125, 100, white)
         screen.blit(timertext[0], timertext[1])
         
     #timeout / draw
@@ -616,7 +692,7 @@ while True:
         tietext = set_text("DRAW", 950, 250, 200, white)
         screen.blit(tietext[0], tietext[1])
         roundover = True
-
+        
     #player wins
     if player1wins == True:
         player1winstext = set_text("PLAYER 1 WINS", 950, 250, 200, white)
@@ -650,6 +726,19 @@ while True:
             newtimer = True
 
     #drawing
+
+
+    pygame.draw.rect(screen, white, p1healthbackground, 0)
+    pygame.draw.rect(screen, gray, p1healthbackgroundshadow, 0)
+    pygame.draw.rect(screen, red, pygame.Rect((HEIGHT/ 54), 20, player1.p1health * 9, 40), 0)
+    pygame.draw.rect(screen, white, p2healthbackground, 0)
+    pygame.draw.rect(screen, gray, p2healthbackgroundshadow, 0)
+    pygame.draw.rect(screen, red, pygame.Rect(((HEIGHT/54) * 50) + ((100 * 9) - player2.p2health * 9), 20, player2.p2health * 9, 40), 0)
+    pygame.draw.circle(screen, white, (75, 125), 30, 0)
+    pygame.draw.circle(screen, white, (150, 125), 30, 0)
+    pygame.draw.circle(screen, white, (1845, 125), 30, 0)
+    pygame.draw.circle(screen, white, (1770, 125), 30, 0)
+
     if p1inmove == False:
         pygame.draw.rect(screen, yellow, player1.p1hurtbox, 2)
     elif p1inmove == True:
@@ -659,19 +748,7 @@ while True:
         pygame.draw.rect(screen, blue, player2.p2hurtbox, 2)
     elif p2inmove == True:
         pygame.draw.rect(screen, dimmedblue, player2.p2hurtbox, 2)
-
-
-    pygame.draw.rect(screen, white, p1healthbackground, 0)
-    pygame.draw.rect(screen, gray, p1healthbackgroundshadow, 0)
-    pygame.draw.rect(screen, red, pygame.Rect((WIDTH/ 54), 20, player1.p1health * 9, 40), 0)
-    pygame.draw.rect(screen, white, p2healthbackground, 0)
-    pygame.draw.rect(screen, gray, p2healthbackgroundshadow, 0)
-    pygame.draw.rect(screen, red, pygame.Rect(((WIDTH/54) * 50) + ((100 * 9) - player2.p2health * 9), 20, player2.p2health * 9, 40), 0)
-    pygame.draw.circle(screen, white, (75, 125), 30, 0)
-    pygame.draw.circle(screen, white, (150, 125), 30, 0)
-    pygame.draw.circle(screen, white, (1845, 125), 30, 0)
-    pygame.draw.circle(screen, white, (1770, 125), 30, 0)
-
+    
     if numofp1wins >=1:
         pygame.draw.circle(screen, yellow, (75,125), 25, 0)
     if numofp1wins >= 2:
@@ -699,13 +776,13 @@ while True:
         if pressingplayagain == False and pressedplayagain > 0:
             pressedplayagain = pressedplayagain - 10
 
-        playagainfill = pygame.Rect((HEIGHT/ 2) - 500, 500, pressedplayagain, 250)
+        playagainfill = pygame.Rect((WIDTH/ 2) - 500, 500, pressedplayagain, 250)
         playagainfill.centery = 500
 
         pygame.draw.rect(screen, gray, playagainfill, 0)
         pygame.draw.rect(screen, white, mouse, 2)
         pygame.draw.rect(screen, white, playagainbutton, 2)
-        infotext = set_text("play again", HEIGHT/2, 500, 200, white)
+        infotext = set_text("play again", WIDTH/2, 500, 200, white)
         screen.blit(infotext[0], infotext[1])
 
     
@@ -727,7 +804,6 @@ while True:
         newtimer = True
         
     pygame.display.flip()
-    p2atedge = False
+     
     
-    
-    clock.tick(fps) 
+    clock.tick(fps)
