@@ -5,7 +5,7 @@ import time, pygame, time, sys
 import player1
 import player2
 import timer
-
+import shotocharacter
 
 
 #pygame setup
@@ -72,7 +72,7 @@ timer.timer.setup()
 
 #character setup
 player1.p1.setup()
-player2.p2.setup()
+player2.p2.setup(shotocharacter.hurtbox.standingwidth, shotocharacter.hurtbox.standingheight, shotocharacter.hurtbox.crouchingwidth, shotocharacter.hurtbox.crouchingheight)
 p2health = 100
 p1moveright = False
 p1moveleft = False
@@ -128,6 +128,7 @@ def epunchendlag(endlagframes):
         epunch = False
         p1inmove = False
         epunchinendlag = False
+        p1framecount = 0
 
 def qkickendlag(endlagframes):
     global p1framecount, p1inmove, qkick, qkickinendlag
@@ -136,6 +137,7 @@ def qkickendlag(endlagframes):
         qkick = False
         p1inmove = False
         qkickinendlag = False
+        p1framecount = 0
 
 def upunchendlag(endlagframes):
     global p2framecount, p2inmove, upunch, upunchinendlag
@@ -144,6 +146,7 @@ def upunchendlag(endlagframes):
         upunch = False
         p2inmove = False
         upunchinendlag = False
+        p2framecount = 0
 
 def okickendlag(endlagframes):
     global p2framecount, p2inmove, okick, okickinendlag
@@ -152,6 +155,7 @@ def okickendlag(endlagframes):
         okick = False
         p2inmove = False
         okickinendlag = False
+        p2framecount = 0
 
 #frame data active frames
 
@@ -165,10 +169,13 @@ def epunchactive(activeframes):
         epunchinendlag = True
 
 def qkickactive(activeframes):
-    global p1framecount, p1gothit, qkickinendlag
+    global p1framecount, p1gothit, qkickinendlag, p1facing
     p1framecount = p1framecount + 1
     if player1.crouch == False:
-        player1.p1.move(5)
+        if p1facing == 1:
+            player1.p1.move(5)
+        if p1facing == 0: 
+            player1.p1.move(-5)
     if p1framecount >= activeframes:
         player1.qkickout = False
         p1framecount = 0 
@@ -185,10 +192,13 @@ def upunchactive(activeframes):
         upunchinendlag = True
 
 def okickactive(activeframes):
-    global p2framecount, p2gothit, okickinendlag
+    global p2framecount, p2gothit, okickinendlag, p2facing
     p2framecount = p2framecount + 1
     if player2.crouch == False:
-        player2.p2.move(-5)
+        if p2facing == 1:
+            player2.p2.move(5)
+        if p2facing == 0:
+            player2.p2.move(-5)
     if p2framecount >= activeframes:
         player2.okickout = False
         p2framecount = 0
@@ -290,13 +300,21 @@ def p2pushing():
 
 
 #knockback
-def p1knockback(xspeed, xdestination, yspeed, ydestination):
+def p1knockbackleft(xspeed, xdestination, yspeed, ydestination):
     player1.p1.yvelocity(yspeed, ydestination)
-    player1.p1.xvelocity(xspeed, xdestination)
+    player1.p1.xvelocityleft(xspeed, xdestination)
 
-def p2knockback(xspeed, xdestination, yspeed, ydestination):
+def p1knockbackright(xspeed, xdestination, yspeed, ydestination):
+    player1.p1.yvelocity(yspeed, ydestination)
+    player1.p1.xvelocityright(xspeed, xdestination)
+
+def p2knockbackleft(xspeed, xdestination, yspeed, ydestination):
     player2.p2.yvelocity(yspeed, ydestination)
-    player2.p2.xvelocity(xspeed, xdestination)
+    player2.p2.xvelocityleft(xspeed, xdestination)
+
+def p2knockbackright(xspeed, xdestination, yspeed, ydestination):
+    player2.p2.yvelocity(yspeed, ydestination)
+    player2.p2.xvelocityright(xspeed, xdestination)
 
 
 
@@ -384,15 +402,13 @@ while True:
             
             #player 1 movement and moves
             if event.key == pygame.K_d:
-                if p1moveleft == False:
-                    p1moveright = True
-                    if p1facing == 0:
-                        player1.p1.blocking()
+                p1moveright = True
+                if p1facing == 0:
+                    player1.p1.blocking()
             if event.key == pygame.K_a:
-                if p1moveright == False:
-                    p1moveleft = True
-                    if p1facing == 1:
-                        player1.p1.blocking()
+                p1moveleft = True
+                if p1facing == 1:
+                    player1.p1.blocking()
             if event.key == pygame.K_s:
                 if player1.onground == True:
                     p1crouch = True
@@ -407,15 +423,13 @@ while True:
            
             #player 2 movement and moves
             if event.key == pygame.K_l:
-                if p2moveleft == False:
-                    p2moveright = True
-                    if p2facing == 0:
-                        player2.p2.blocking()
+                p2moveright = True
+                if p2facing == 0:
+                    player2.p2.blocking()
             if event.key == pygame.K_j:
-                if p2moveright == False:
-                    p2moveleft = True
-                    if p2facing == 1:
-                        player2.p2.blocking()
+                p2moveleft = True
+                if p2facing == 1:
+                    player2.p2.blocking()
             if event.key == pygame.K_k:
                 if player2.onground == True:
                     p2crouch = True
@@ -457,16 +471,20 @@ while True:
     
     #player 1 move and crouch
     if p1inmove == False:
-        if p1moveright == True:
-            if p1facing == 1:
-                player1.p1.move(10)
-            if p1facing == 0:
-                player1.p1.move(5)
-        if p1moveleft == True:
-            if p1facing == 0:
-                player1.p1.move(-10)
-            if p1facing == 1:
-                player1.p1.move(-5)
+        if p1moveleft == False:
+            if p1moveright == True:
+                if p1facing == 1:
+                    player1.p1.move(10)
+                if p1facing == 0:
+                    player1.p1.move(5)
+
+        if p1moveright == False:
+            if p1moveleft == True:
+                if p1facing == 0:
+                    player1.p1.move(-10)
+                if p1facing == 1:
+                    player1.p1.move(-5)
+
         if p1crouch == True:
             player1.p1.crouch()
         if p1jump == True:
@@ -476,23 +494,33 @@ while True:
             player1.p1.uncrouch()
     if epunch == True:
         p1inmove = True
-        epunchstartup(5)
+        if p1crouch == False:
+            epunchstartup(3)
+        if p1crouch == True:
+            epunchstartup(10)
     if qkick == True:
         p1inmove = True
-        qkickstartup(10)
+        if p1crouch == False:
+            qkickstartup(20)
+        if p1crouch == True:
+            qkickstartup(7)
 
     if p2inmove == False:
         #player 2 move and crouch
-        if p2moveright == True:
-            if p2facing == 1:
-                player2.p2.move(10)
-            if p2facing == 0:
-                player2.p2.move(5)
-        if p2moveleft == True:
-            if p2facing == 1:
-                player2.p2.move(-5)
-            if p2facing == 0:
-                player2.p2.move(-10)
+        if p2moveleft == False:
+            if p2moveright == True:
+                if p2facing == 1:
+                    player2.p2.move(10)
+                if p2facing == 0:
+                    player2.p2.move(5)
+
+        if p2moveright == False:
+            if p2moveleft == True:
+                if p2facing == 1:
+                    player2.p2.move(-5)
+                if p2facing == 0:
+                    player2.p2.move(-10)
+
         if p2crouch == True:
             player2.p2.crouch()
         if p2jump == True:
@@ -502,10 +530,16 @@ while True:
             player2.p2.uncrouch()
     if upunch == True:
         p2inmove = True
-        upunchstartup(5)
+        if p2crouch == False:
+            upunchstartup(3)
+        if p2crouch == True:
+            upunchstartup(10)
     if okick == True:
         p2inmove = True
-        okickstartup(10)
+        if p2crouch == False:
+            okickstartup(20)
+        if p2crouch == True:
+            okickstartup(7)
 
 
     #roundstart/ countdown
@@ -602,24 +636,36 @@ while True:
     if player2.noknockback == False:
         if epunchknockback == True:
             if player1.crouch == False:
-                p2knockback(10, 100, 50, -50)
+                if p1facing == 1:
+                    p2knockbackright(10, 100, 50, -50)
+                elif p1facing == 0:
+                    p2knockbackleft(10, -100, 50, -50)
                 if player2.knockbacked == True:
                     epunchknockback = False
                     player2.knockbacked = False
             if player1.crouch == True:
-                p2knockback(110, 400, 100, -200)
+                if p1facing == 1:
+                    p2knockbackright(110, 400, 100, -200)
+                elif p1facing == 0:
+                    p2knockbackleft(110, 400, 100, -200)
                 if player2.knockbacked == True:
                     epunchknockback = False
                     player2.knockbacked = False
 
         if qkickknockback == True:
             if player1.crouch == False:
-                p2knockback(200, 800, 50, -50)
+                if p1facing == 1:
+                    p2knockbackright(200, 800, 50, -50)
+                elif p1facing == 0:
+                    p2knockbackleft(200, -800, 50, -50)
                 if player2.knockbacked == True:
                     qkickknockback = False
                     player2.knockbacked = False
             if player1.crouch == True:
-                p2knockback(100, 50, 150, -450)
+                if p1facing == 1:
+                    p2knockbackright(100, 50, 150, -450)
+                elif p1facing == 0:
+                    p2knockbackleft(100, 50, 150, -450)
                 if player2.knockbacked == True:
                     qkickknockback = False
                     player2.knockbacked = False
@@ -628,24 +674,36 @@ while True:
     if player1.noknockback == False:
         if upunchknockback == True:
             if player2.crouch == False:
-                p1knockback(10, -100, 50, -50)
+                if p2facing == 1:
+                    p1knockbackright(10, 100, 50, -50)
+                elif p2facing == 0:
+                    p1knockbackleft(10, -100, 50, -50)
                 if player1.knockbacked == True:
                     upunchknockback = False
                     player1.knockbacked = False
             if player2.crouch == True:
-                p1knockback(110, -400, 100, -200)
+                if p2facing == 1:
+                    p1knockbackright(110, 400, 100, -200)
+                elif p2facing == 0:
+                    p1knockbackleft(110, -400, 100, -200)
                 if player1.knockbacked == True:
                     upunchknockback = False
                     player1.knockbacked = False
     
         if okickknockback == True:
             if player2.crouch == False:
-                p1knockback(200, -800, 50, -50)
+                if p2facing == 1:
+                    p1knockbackright(200, 800, 50, -50)
+                elif p2facing == 0:
+                    p1knockbackleft(200, -800, 50, -50)
                 if player1.knockbacked == True:
                     okickknockback = False
                     player1.knockbacked = False
             if player2.crouch == True:
-                p1knockback(100, -50, 150, -450)
+                if p2facing == 1:
+                    p1knockbackright(100, 50, 150, -450)
+                if p2facing == 0:
+                    p1knockbackleft(100, -50, 150, -450)
                 if player1.knockbacked == True:
                     okickknockback = False
                     player1.knockbacked = False

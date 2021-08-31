@@ -1,14 +1,17 @@
 import pygame
+import shotocharacter
 
 def sayhello():
-    print("hello world")
+    shotocharacter.sayhello()
 
 class p2():
-    def setup():
-        global p2x, p2y, p2hurtbox, onground, knockbacked, death,  noknockback, yvelocityend, xvelocityend, jump, oldp2x, oldp2y, isblocking, okickout, p2health, WIDTH, HEIGHT, crouch,  upunchout, p2framecount, black, yellow, green, red
+    def setup(standingwidth, standingheight, crouchingwidth, crouchingheight):
+        global p2x, p2y, p2hurtbox, onground, crouchhurtbox, basep2hurtbox, knockbacked, death,  noknockback, yvelocityend, xvelocityend, jump, oldp2x, oldp2y, isblocking, okickout, p2health, WIDTH, HEIGHT, crouch,  upunchout, p2framecount, black, yellow, green, red
         size = HEIGHT, WIDTH = 1080, 1920
         p2x, p2y = ((WIDTH/ 10) * 9), (HEIGHT/ 10) * 7
-        p2hurtbox = pygame.Rect(540, 240, (WIDTH / 9), (HEIGHT/ 2.5))
+        basep2hurtbox = pygame.Rect(p2x, p2y, standingwidth, standingheight)
+        crouchhurtbox = pygame.Rect(p2x, p2y, crouchingwidth, crouchingheight)
+        p2hurtbox = basep2hurtbox
         p2hurtbox.center = p2x, p2y
         p2health = 100
         p2framecount = 0
@@ -73,12 +76,12 @@ class p2():
     def crouch():
         global WIDTH, HEIGHT, p2hurtbox, crouch
         crouch = True
-        p2hurtbox = pygame.Rect(p2x, 240, (WIDTH/ 7), (HEIGHT/ 4.5))
+        p2hurtbox = crouchhurtbox
         p2hurtbox.center = p2x, p2y + 96
 
     def uncrouch():
         global p2hurtbox, WIDTH, HEIGHT, crouch
-        p2hurtbox = pygame.Rect(p2x, p2y, (WIDTH / 9), (HEIGHT / 2.5))
+        p2hurtbox = basep2hurtbox
         p2hurtbox.center = p2x, p2y
         crouch = False
 
@@ -131,7 +134,7 @@ class p2():
             else:
                 onground = False
 
-    def xvelocity(speed, destination):
+    def xvelocityright(speed, destination):
         global p2x, oldp2x, xvelocityend, death
         if death == True:
             speed = speed / 2
@@ -140,6 +143,18 @@ class p2():
             p2x = p2x + speed
             oldp2x = oldp2x + speed
         if oldp2x >= destination:
+            oldp2x = 0
+            xvelocityend = True
+
+    def xvelocityleft(speed, destination):
+        global p2x, oldp2x, xvelocityend, death
+        if death == True:
+            speed = speed / 2
+            destination = (destination/5 ) * 7
+        if oldp2x > destination:
+            p2x = p2x - speed
+            oldp2x = oldp2x - speed
+        if oldp2x <= destination:
             oldp2x = 0
             xvelocityend = True
             

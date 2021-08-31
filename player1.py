@@ -130,8 +130,20 @@ class p1():
                     onground = False
             else:
                 onground = False
+
+    def xvelocityright(speed, destination):
+        global p1x, oldp1x, xvelocityend, death
+        if death == True:
+            speed = speed / 2
+            destination = (destination/5) *7
+        if oldp1x < destination:
+            p1x = p1x + speed
+            oldp1x = oldp1x + speed
+        if oldp1x >= destination:
+            oldp1x = 0
+            xvelocityend = True
     
-    def xvelocity(speed, destination):
+    def xvelocityleft(speed, destination):
         global p1x, oldp1x, xvelocityend, death
         if death == True:
             speed = speed / 2
