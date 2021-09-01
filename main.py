@@ -574,7 +574,7 @@ while True:
     if epunchinendlag and p1crouch == True:
         epunchendlag(15)
     elif epunchinendlag == True:
-        epunchendlag(10)
+        epunchendlag(100)
     if player1.epunchout == True:
         epunchhitbox()
         epunchactive(7)
