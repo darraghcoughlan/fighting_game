@@ -45,17 +45,18 @@ class p2():
         else:
             p2health = p2health - damagedealt
 
-    def gravity():
+    def gravity(floor):
         global p2y, HEIGHT, onground
         if p2y < (HEIGHT/ 10) * 7:
             p2y = p2y + 20
-        if p2y > (HEIGHT / 10 ) * 7:
+        if p2y > (HEIGHT / 10 ) * 7 + floor:
             p2y = (HEIGHT / 10) * 7
-        if p2y == (HEIGHT / 10) * 7:
+        if p2y == (HEIGHT / 10) * 7 + floor:
             onground = True
 
-    def move(moveby):
+    def move(moveby, movementspeed):
         global p2x, p2y, crouch, HEIGHT
+        moveby = moveby * movementspeed
         p2x = p2x + moveby
         if crouch == False:
             p2hurtbox.center = p2x, p2y
@@ -73,11 +74,11 @@ class p2():
         isblocking = False
         noknockback = False
 
-    def crouch():
+    def crouch(crouchfloor):
         global WIDTH, HEIGHT, p2hurtbox, crouch
         crouch = True
         p2hurtbox = crouchhurtbox
-        p2hurtbox.center = p2x, p2y + 96
+        p2hurtbox.center = p2x, p2y + crouchfloor
 
     def uncrouch():
         global p2hurtbox, WIDTH, HEIGHT, crouch
@@ -85,32 +86,32 @@ class p2():
         p2hurtbox.center = p2x, p2y
         crouch = False
 
-    def upunch(p2facing):
+    def upunch(p2facing, standingwidth, standingheight, standingy, standingx, crouchingwidth, crouchingheight, crouchingx, crouchingy):
         global upunchout, hitbox, crouch
         if p2facing == 1:
             if crouch == False:
-                hitbox = pygame.Rect(p2hurtbox.centerx, p2hurtbox.centery - 85, 250, 50)
+                hitbox = pygame.Rect(p2hurtbox.centerx + standingx, p2hurtbox.centery + standingy, standingwidth, standingheight)
             if crouch == True:
-                hitbox = pygame.Rect(p2hurtbox.centerx,p2hurtbox.centery - 85, 225, 50)
+                hitbox = pygame.Rect(p2hurtbox.centerx + crouchingx ,p2hurtbox.centery + crouchingy, crouchingwidth, crouchingheight)
         if p2facing == 0:
             if crouch == False:
-                hitbox = pygame.Rect(p2hurtbox.centerx - 250, p2hurtbox.centery - 85, 250, 50)
+                hitbox = pygame.Rect(p2hurtbox.centerx - standingwidth - standingx, p2hurtbox.centery + standingy, standingwidth, standingheight)
             if crouch == True:
-                hitbox = pygame.Rect(p2hurtbox.centerx - 225, p2hurtbox.centery - 85, 225, 50)
+                hitbox = pygame.Rect(p2hurtbox.centerx - crouchingwidth - crouchingx, p2hurtbox.centery + crouchingy, crouchingwidth, crouchingheight)
         upunchout = True
     
-    def okick(p2facing):
+    def okick(p2facing, standingwidth, standingheight, standingy, standingx, crouchingwidth, crouchingheight, crouchingx, crouchingy):
         global okickout, hitbox, crouch
         if p2facing == 1:
             if crouch == False:
-                hitbox = pygame.Rect(p2hurtbox.centerx, p2hurtbox.centery + 20, 300, 75)
+                hitbox = pygame.Rect(p2hurtbox.centerx + standingx, p2hurtbox.centery + standingy, standingwidth, standingheight)
             if crouch == True:
-                hitbox = pygame.Rect(p2hurtbox.centerx, p2hurtbox.centery + 65, 350, 50)
+                hitbox = pygame.Rect(p2hurtbox.centerx + crouchingx, p2hurtbox.centery + crouchingy, crouchingwidth, crouchingheight)
         if p2facing == 0:
             if crouch == False:
-                hitbox = pygame.Rect(p2hurtbox.centerx - 300, p2hurtbox.centery + 20, 300, 75)
+                hitbox = pygame.Rect(p2hurtbox.centerx - standingwidth - standingx, p2hurtbox.centery + standingy, standingwidth, standingheight)
             if crouch == True:
-                hitbox = pygame.Rect(p2hurtbox.centerx - 350, p2hurtbox.centery + 65, 350, 50)
+                hitbox = pygame.Rect(p2hurtbox.centerx - crouchingwidth - crouchingx, p2hurtbox.centery + crouchingy, standingwidth, standingheight)
         okickout = True
 
     def yvelocity(speed, destination):
@@ -158,10 +159,10 @@ class p2():
             oldp2x = 0
             xvelocityend = True
             
-    def jump():
+    def jump(jumpspeed, jumpheight):
         global HEIGHT, onground, jump
         if onground == True:
-            p2.jumpvelocity(75, (HEIGHT / 8))
+            p2.jumpvelocity(jumpspeed, jumpheight)
             jump = True
 
     def fallover_death():
