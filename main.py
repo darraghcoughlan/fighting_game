@@ -58,6 +58,43 @@ if p2char == "shoto":
     p2crouchingpunchknockbackyspeed = shotocharacter.crouchingpunchknockback.yspeed
     p2crouchingpunchknkockbackydestination = shotocharacter.crouchingpunchknockback.ydestination
 
+    #standingkick knockback
+    p2standingkickknockbackxspeed = shotocharacter.standingkickknockback.xspeed
+    p2standingkickknockbackxdestination = shotocharacter.standingkickknockback.xdestination
+    p2standingkickknockbackyspeed = shotocharacter.standingkickknockback.yspeed
+    p2standingkickknockbackydestination = shotocharacter.standingkickknockback.ydestination
+
+    #crouchingkick knockback
+    p2crouchingkickknockbackxspeed = shotocharacter.crouchingkickknockback.xspeed
+    p2crouchingkickknockbackxdestination = shotocharacter.crouchingkickknockback.xdestination
+    p2crouchingkickknockbackyspeed = shotocharacter.crouchingkickknockback.yspeed
+    p2crouchingkickknockbackydestination = shotocharacter.crouchingkickknockback.ydestination
+
+    #standingpunch framedata
+    p2standingpunchstartup = shotocharacter.standingpunchframedata.startup
+    p2standingpunchactive = shotocharacter.standingpunchframedata.active
+    p2standingpunchendlag = shotocharacter.standingpunchframedata.endlag
+
+    #crouchingpunch framedata
+    p2crouchingpunchstartup = shotocharacter.crouchingpunchframedata.startup
+    p2crouchingpunchactive = shotocharacter.crouchingpunchframedata.active
+    p2crouchingpunchendlag = shotocharacter.crouchingpunchframedata.endlag
+
+    #standingkick framedata
+    p2standingkickstartup = shotocharacter.standingkickframedata.startup
+    p2standingkickactive = shotocharacter.standingkickframedata.active
+    p2standingkickendlag = shotocharacter.standingkickframedata.endlag
+
+    #crouchingkick framedata
+    p2crouchingkickstartup = shotocharacter.crouchingkickframedata.startup
+    p2crouchingkickactive = shotocharacter.crouchingkickframedata.active
+    p2crouchingkickendlag = shotocharacter.crouchingkickframedata.endlag
+
+    #stun frames
+    p2standingpunchstun = shotocharacter.stun.standingpunch
+    p2crouchingpunchstun = shotocharacter.stun.crouchingpunch
+    p2standingkickstun = shotocharacter.stun.standingkick
+    p2crouchingkickstun = shotocharacter.stun.crouchingkick
 
 #pygame setup
 numofp1wins = 0
@@ -93,7 +130,7 @@ fps = 60
 newtimer = True
 
 def resetvars():
-    global tie, roundover, p1facing, p2facing, player1death,roundstart, player2death, player1wins, player2wins, player1died, player2died, player2fallover, player1fallover, p1deathframecount, p2deathframecount
+    global tie, roundover, p1facing, p2facing, p1instun, p1standingpunchinstun, p1standingkickinstun, p1crouchingkickinstun, p1crouchingpunchinstun, player1death,roundstart, player2death, player1wins, player2wins, player1died, player2died, player2fallover, player1fallover, p1deathframecount, p2deathframecount
     player1died = False
     player2died = False
 
@@ -116,6 +153,13 @@ def resetvars():
     #1 for right 0 for left
     p1facing = 1
     p2facing = 0
+    
+    p1standingpunchinstun = False
+    p1crouchingpunchinstun = False
+    p1standingkickinstun = False
+    p1crouchingkickinstun = False
+    player1.instun = False
+    
     timer.timer.setupcountdown(3)
 resetvars()
 #timer setup
@@ -367,7 +411,27 @@ def p2knockbackright(xspeed, xdestination, yspeed, ydestination):
     player2.p2.yvelocity(yspeed, ydestination)
     player2.p2.xvelocityright(xspeed, xdestination)
 
+#stun
+def p1stun(stunframes):
+    global p1framecount, p1inmove
+    p1framecount = p1framecount + 1
+    if p1framecount >= stunframes:
+        p1inmove = False
+        p1framecount = 0
+        player1.instun = False
 
+#attack interupted
+def p1interupted():
+    global p1framecount
+    player1.qkickout = False
+    player1.epunchout = False
+    p1framecount = 0
+
+def p2interupted():
+    global p2framecount
+    player2.okickout = False
+    player2.upunchout = False
+    p2framecount = 0
 
 #hitboxes and hitdetection
 #p1 got hit means player 2 got hit
@@ -378,6 +442,7 @@ def epunchhitbox():
     pygame.draw.rect(screen, red, player1.hitbox, 0)
     if p1gothit == False:
         if player1.hitbox.colliderect(player2.p2hurtbox):
+            p2interupted()
             if player2.noknockback == False:
                 epunchknockback = True
             if player1.crouch == False:
@@ -391,6 +456,7 @@ def qkickhitbox():
     pygame.draw.rect(screen, red, player1.hitbox, 0)
     if p1gothit == False:
         if player1.hitbox.colliderect(player2.p2hurtbox):
+            p2interupted()
             if player2.noknockback == False:
                 qkickknockback = True
             if player1.crouch == False:
@@ -400,29 +466,39 @@ def qkickhitbox():
             p1gothit = True
 
 def upunchhitbox():
-    global p2gothit, upunchknockback
+    global p2gothit, upunchknockback, p1standingpunchinstun, p1crouchingpunchinstun, p1framecount
     pygame.draw.rect(screen, red, player2.hitbox, 0)
     if p2gothit == False:
         if player2.hitbox.colliderect(player1.p1hurtbox):
+            p1interupted()
+            player1.instun = True
+            p1framecount = 0
             if player1.noknockback == False:
                 upunchknockback = True
             if player2.crouch == False:
                 player1.p1.takedamage(100)
+                p1standingpunchinstun = True
             if player2.crouch == True:
                 player1.p1.takedamage(5)
+                p1crouchingpunchinstun = True
             p2gothit = True
 
 def okickhitbox():
-    global p2gothit, okickknockback
+    global p2gothit, okickknockback, p1standingkickinstun, p1crouchingkickinstun, p1framecount
     pygame.draw.rect(screen, red, player2.hitbox, 0)
     if p2gothit == False:
         if player2.hitbox.colliderect(player1.p1hurtbox):
+            p1interupted()
+            player1.instun = True
+            p1framecount = 0
             if player1.noknockback == False:
                 okickknockback = True
             if player2.crouch == False:
                 player1.p1.takedamage(4)
+                p1standingkickinstun = True
             if player2.crouch == True:
                 player1.p1.takedamage(2)
+                p1crouchingkickinstun = True
             p2gothit = True
 
 
@@ -464,7 +540,8 @@ while True:
                 if player1.onground == True:
                     p1crouch = True
             if event.key == pygame.K_w:
-                p1jump = True
+                if player1.instun == False:
+                    p1jump = True
             if p1inmove == False:
                 if event.key == pygame.K_e:
                     epunch = True
@@ -485,7 +562,8 @@ while True:
                 if player2.onground == True:
                     p2crouch = True
             if event.key == pygame.K_i:
-                p2jump = True
+                if player2.instun == True:
+                    p2jump = True
             if p2inmove == False:
                 if event.key == pygame.K_u:
                     upunch = True
@@ -543,18 +621,19 @@ while True:
         #player 1 uncrouch
         if p1crouch == False:
             player1.p1.uncrouch()
-    if epunch == True:
-        p1inmove = True
-        if p1crouch == False:
-            epunchstartup(3)
-        if p1crouch == True:
-            epunchstartup(10)
-    if qkick == True:
-        p1inmove = True
-        if p1crouch == False:
-            qkickstartup(20)
-        if p1crouch == True:
-            qkickstartup(7)
+    if player1.instun == False:
+        if epunch == True:
+            p1inmove = True
+            if p1crouch == False:
+                epunchstartup(3)
+            if p1crouch == True:
+                epunchstartup(10)
+        if qkick == True:
+            p1inmove = True
+            if p1crouch == False:
+                qkickstartup(20)
+            if p1crouch == True:
+                qkickstartup(7)
 
     if p2inmove == False:
         #player 2 move and crouch
@@ -582,15 +661,15 @@ while True:
     if upunch == True:
         p2inmove = True
         if p2crouch == False:
-            upunchstartup(3)
+            upunchstartup(p2standingpunchstartup)
         if p2crouch == True:
-            upunchstartup(10)
+            upunchstartup(p2crouchingpunchstartup)
     if okick == True:
         p2inmove = True
         if p2crouch == False:
-            okickstartup(20)
+            okickstartup(p2standingkickstartup)
         if p2crouch == True:
-            okickstartup(7)
+            okickstartup(p2crouchingkickstartup)
 
 
     #roundstart/ countdown
@@ -626,36 +705,48 @@ while True:
         epunchendlag(15)
     elif epunchinendlag == True:
         epunchendlag(10)
-    if player1.epunchout == True:
+    if player1.epunchout == True and p1crouch == False:
         epunchhitbox()
         epunchactive(7)
+    elif player1.epunchout == True:
+        epunchhitbox()
+        epunchactive(5)
 
     #qkick
     if qkickinendlag and p1crouch == True:
         qkickendlag(7)
     elif qkickinendlag == True:
         qkickendlag(15)
-    if player1.qkickout == True:
+    if player1.qkickout == True and p1crouch == False:
         qkickhitbox()
         qkickactive(10)
+    elif player1.qkickout == True:
+        qkickhitbox()
+        qkickactive(5)
 
     #upunch
     if upunchinendlag and p2crouch == True:
-        upunchendlag(15)
+        upunchendlag(p2crouchingpunchendlag)
     elif upunchinendlag == True:
-        upunchendlag(10)
-    if player2.upunchout == True:
+        upunchendlag(p2standingpunchendlag)
+    if player2.upunchout == True and p2crouch == True:
         upunchhitbox()
-        upunchactive(7)
+        upunchactive(p2crouchingpunchactive)
+    elif player2.upunchout == True:
+        upunchhitbox()
+        upunchactive(p2standingpunchactive)
 
     #okick
     if okickinendlag and p2crouch == True:
-        okickendlag(7)
+        okickendlag(p2crouchingkickendlag)
     elif okickinendlag == True:
-        okickendlag(15)
-    if player2.okickout == True:
+        okickendlag(p2standingkickendlag)
+    if player2.okickout == True and p2crouch == True:
         okickhitbox()
-        okickactive(10)
+        okickactive(p2crouchingkickactive)
+    elif player2.okickout == True:
+        okickhitbox()
+        okickactive(p2standingkickactive)
 
         #win condidtion
     if player1.p1health <= 0:
@@ -669,9 +760,11 @@ while True:
 
     if player2fallover == True:
         player2.p2.fallover_death()
+        player2.instun = True
 
     if player1fallover == True:
         player1.p1.fallover_death()
+        player1.instun = True
 
     #knockback
     if player2.xvelocityend and player2.yvelocityend == True:
@@ -744,20 +837,40 @@ while True:
         if okickknockback == True:
             if player2.crouch == False:
                 if p2facing == 1:
-                    p1knockbackright(200, 800, 50, -50)
+                    p1knockbackright(p2standingkickknockbackxspeed, p2standingkickknockbackxdestination, p2standingkickknockbackyspeed, p2standingkickknockbackydestination)
                 elif p2facing == 0:
-                    p1knockbackleft(200, -800, 50, -50)
+                    p1knockbackleft(p2standingkickknockbackxspeed, -(p2standingkickknockbackxdestination), p2standingkickknockbackyspeed, p2standingkickknockbackydestination)
                 if player1.knockbacked == True:
                     okickknockback = False
                     player1.knockbacked = False
             if player2.crouch == True:
                 if p2facing == 1:
-                    p1knockbackright(100, 50, 150, -450)
+                    p1knockbackright(p2crouchingkickknockbackxspeed, p2crouchingkickknockbackxdestination, p2crouchingkickknockbackyspeed, p2crouchingpunchknkockbackydestination)
                 if p2facing == 0:
-                    p1knockbackleft(100, -50, 150, -450)
+                    p1knockbackleft(p2crouchingkickknockbackxspeed, -(p2crouchingkickknockbackxdestination), p2crouchingkickknockbackyspeed, p2crouchingpunchknkockbackydestination)
                 if player1.knockbacked == True:
                     okickknockback = False
                     player1.knockbacked = False
+
+    #stun
+    if player1.instun == True:
+        if p1standingpunchinstun == True:
+            p1stun(p2standingpunchstun)
+
+        if p1crouchingpunchinstun == True:
+            p1stun(p2crouchingpunchstun)
+    
+        if p1standingkickinstun == True:
+            p1stun(p2standingkickstun)
+            print(p1framecount)
+    
+        if p1crouchingkickinstun == True:
+            p1stun(p2crouchingkickstun)
+    elif player1.instun == False:
+        p1standingkickinstun = False
+        p1standingpunchinstun = False
+        p1crouchingpunchinstun = False
+        p1crouchingkickinstun = False
 
     #death
     if player2wins == True and player1died == False:
@@ -848,9 +961,9 @@ while True:
     pygame.draw.circle(screen, white, (1845, 125), 30, 0)
     pygame.draw.circle(screen, white, (1770, 125), 30, 0)
 
-    if p1inmove == False:
+    if p1inmove == False and player1.instun == False:
         pygame.draw.rect(screen, yellow, player1.p1hurtbox, 2)
-    elif p1inmove == True:
+    elif p1inmove == True or player1.instun == True:
         pygame.draw.rect(screen, dimmedyellow, player1.p1hurtbox, 2)
     
     if p2inmove == False:
@@ -914,5 +1027,5 @@ while True:
         
     pygame.display.flip()
      
-    
+
     clock.tick(fps)

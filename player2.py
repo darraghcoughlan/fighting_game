@@ -111,7 +111,7 @@ class p2():
             if crouch == False:
                 hitbox = pygame.Rect(p2hurtbox.centerx - standingwidth - standingx, p2hurtbox.centery + standingy, standingwidth, standingheight)
             if crouch == True:
-                hitbox = pygame.Rect(p2hurtbox.centerx - crouchingwidth - crouchingx, p2hurtbox.centery + crouchingy, standingwidth, standingheight)
+                hitbox = pygame.Rect(p2hurtbox.centerx - crouchingwidth - crouchingx, p2hurtbox.centery + crouchingy, crouchingwidth, crouchingheight)
         okickout = True
 
     def yvelocity(speed, destination):

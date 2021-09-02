@@ -1,4 +1,5 @@
 import pygame
+from pygame.key import start_text_input
 
 class variables():
     size = HEIGHT, WIDTH = 1080, 1920
@@ -50,3 +51,47 @@ class crouchingpunchknockback():
     xdestination = 400
     yspeed = 100
     ydestination = -200
+
+class standingkickknockback():
+    xspeed = 110
+    xdestination = 800
+    yspeed = 50
+    ydestination = -50
+
+class crouchingkickknockback():
+    xspeed = 100
+    xdestination = 50
+    yspeed = 150
+    ydestination = -450
+
+class damage():
+    standingpunch = 3
+    crouchingpunch = 5
+    standingkick = 4
+    crouchingkick = 2
+
+class stun():
+    standingpunch = 20
+    crouchingpunch = 40
+    standingkick = 75
+    crouchingkick = 15
+
+class standingkickframedata():
+    startup = 1
+    active = 10
+    endlag = 15
+
+class crouchingkickframedata():
+    startup = 7
+    active = 5
+    endlag = 7
+
+class standingpunchframedata():
+    startup = 3
+    active = 7
+    endlag = 10
+
+class crouchingpunchframedata():
+    startup = 10
+    active = 5
+    endlag = 15
