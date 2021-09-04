@@ -466,7 +466,7 @@ def qkickhitbox():
             p1gothit = True
 
 def upunchhitbox():
-    global p2gothit, upunchknockback, p1standingpunchinstun, p1crouchingpunchinstun, p1framecount
+    global p2gothit, upunchknockback, p1standingpunchinstun, p1crouchingpunchinstun, p1framecount   
     pygame.draw.rect(screen, red, player2.hitbox, 0)
     if p2gothit == False:
         if player2.hitbox.colliderect(player1.p1hurtbox):
