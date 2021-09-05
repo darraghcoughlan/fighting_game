@@ -4,11 +4,13 @@ def sayhello():
     print("hello world")
 
 class p1():
-    def setup():
-        global p1x, p1y, p1hurtbox,crouch, noknockback, death, instun, oldp1x, oldp1y, knockbacked, xvelocityend, yvelocityend, onground, jump, isblocking, qkickout, p1health, WIDTH, HEIGHT, p1gothit,  hitbox, p1framecount, black, yellow, green, red, epunchout
+    def setup(standingwidth, standingheight, crouchingwidth, crouchingheight):
+        global p1x, p1y, p1hurtbox,crouch, basep1hurtbox, crouchhurtbox, noknockback, death, instun, oldp1x, oldp1y, knockbacked, xvelocityend, yvelocityend, onground, jump, isblocking, qkickout, p1health, WIDTH, HEIGHT, p1gothit,  hitbox, p1framecount, black, yellow, green, red, epunchout
         size = HEIGHT, WIDTH = 1080, 1920
         p1x, p1y = (WIDTH / 10), (HEIGHT/ 10) * 7
-        p1hurtbox = pygame.Rect(540, 240, (WIDTH / 9), (HEIGHT/ 2.5))
+        basep1hurtbox = pygame.Rect(p1x, p1y, standingwidth, standingheight)
+        crouchhurtbox = pygame.Rect(p1x, p1y, crouchingwidth, crouchingheight)
+        p1hurtbox = basep1hurtbox
         p1hurtbox.center = p1x, p1y
         p1health = 100
         epunchout = False
@@ -44,25 +46,26 @@ class p1():
         else:
             p1health = p1health - damagedealt
 
-    def gravity():
+    def gravity(floor):
         global p1y, HEIGHT, onground
-        if p1y < (HEIGHT / 10 ) *7:
+        if p1y < floor:
             p1y = p1y + 20
-        if p1y > (HEIGHT / 10) *7:
-            p1y = (HEIGHT / 10 * 7)
-        if p1y == (HEIGHT/ 10) *7:
+        if p1y > floor:
+            p1y = floor
+        if p1y == floor:
             onground = True
 
-    def move(moveby):
+    def move(moveby, movementspeed, floor, crouchingfloor):
         global p1x, p1y, crouch, HEIGHT
         if instun == True:
             moveby = moveby / 10
+        moveby = moveby * movementspeed
         p1x = p1x + moveby
         if crouch == False:
             p1hurtbox.center = p1x, p1y
         if crouch == True:
-            p1y =  (HEIGHT / 10) * 7
-            p1hurtbox.center = p1x, p1y + 96
+            p1y = floor
+            p1hurtbox.center = p1x, p1y + crouchingfloor
 
     def blocking():
         global isblocking, noknockback
@@ -74,44 +77,44 @@ class p1():
         isblocking = False
         noknockback = False
 
-    def crouch():
+    def crouch(crouchfloor):
         global WIDTH, HEIGHT, p1hurtbox, crouch
         crouch = True
-        p1hurtbox = pygame.Rect(p1x, 240, (WIDTH/7), (HEIGHT/ 4.5))
-        p1hurtbox.center = p1x, p1y + 96
+        p1hurtbox = crouchhurtbox
+        p1hurtbox.center = p1x, p1y + crouchfloor
     
     def uncrouch():
         global p1hurtbox, WIDTH, HEIGHT, crouch
-        p1hurtbox = pygame.Rect(p1x, p1y, (WIDTH / 9), (HEIGHT / 2.5))
+        p1hurtbox = basep1hurtbox
         p1hurtbox.center = p1x, p1y
         crouch = False
 
-    def epunch(p1facing):
+    def epunch(p1facing, standingwidth, standingheight, standingx, standingy, crouchingwidth, crouchingheight, crouchingx, crouchingy):
         global epunchout, hitbox, crouch
         if p1facing == 1:
             if crouch == False:
-                hitbox = pygame.Rect(p1hurtbox.centerx, p1hurtbox.centery - 85, 250, 50)
+                hitbox = pygame.Rect(p1hurtbox.centerx + standingx, p1hurtbox.centery + standingy, standingwidth, standingheight)
             if crouch == True:
-                hitbox = pygame.Rect(p1hurtbox.centerx,p1hurtbox.centery - 85, 225, 50)
+                hitbox = pygame.Rect(p1hurtbox.centerx + crouchingx ,p1hurtbox.centery + crouchingy, crouchingwidth, crouchingheight)
         if p1facing == 0:
             if crouch == False:
-                hitbox = pygame.Rect(p1hurtbox.centerx - 250, p1hurtbox.centery - 85,225, 50)
+                hitbox = pygame.Rect(p1hurtbox.centerx - standingwidth - standingx, p1hurtbox.centery + standingy, standingwidth, standingheight)
             if crouch == True:
-                hitbox = pygame.Rect(p1hurtbox.centerx - 225, p1hurtbox.centery - 85, 225, 50)
+                hitbox = pygame.Rect(p1hurtbox.centerx - crouchingwidth - crouchingx, p1hurtbox.centery + crouchingy, crouchingwidth, crouchingheight)
         epunchout = True
     
-    def qkick(p1facing):
+    def qkick(p1facing, standingwidth, standingheight, standingx, standingy, crouchingwidth, crouchingheight, crouchingx, crouchingy):
         global qkickout, hitbox, crouch
         if p1facing == 1:
             if crouch == False:
-                hitbox = pygame.Rect(p1hurtbox.centerx, p1hurtbox.centery + 20, 300, 75)
+                hitbox = pygame.Rect(p1hurtbox.centerx + standingx, p1hurtbox.centery + standingy, standingwidth, standingheight)
             if crouch == True:
-                hitbox = pygame.Rect(p1hurtbox.centerx, p1hurtbox.centery + 65, 350, 50)
+                hitbox = pygame.Rect(p1hurtbox.centerx + crouchingx, p1hurtbox.centery + crouchingy, crouchingwidth, crouchingheight)
         if p1facing == 0:
             if crouch == False:
-                hitbox = pygame.Rect(p1hurtbox.centerx - 300, p1hurtbox.centery + 20, 300, 75)
+                hitbox = pygame.Rect(p1hurtbox.centerx - standingwidth - standingx, p1hurtbox.centery + standingy, standingwidth, standingheight)
             if crouch == True:
-                hitbox = pygame.Rect(p1hurtbox.centerx - 350, p1hurtbox.centery + 65, 350, 50)
+                hitbox = pygame.Rect(p1hurtbox.centerx - crouchingwidth - crouchingx, p1hurtbox.centery + crouchingy, crouchingwidth, crouchingheight)
         qkickout = True
 
     def yvelocity(speed, destination):
@@ -159,13 +162,13 @@ class p1():
             oldp1x = 0
             xvelocityend = True
             
-    def jump():
+    def jump(jumpspeed, jumpheight):
         global HEIGHT, onground, jump
         if onground == True:
-            p1.jumpvelocity(75, (HEIGHT/ 8))
+            p1.jumpvelocity(jumpspeed, jumpheight)
             jump = True
 
-    def fallover_death():
+    def fallover_death(standingwidth, standingheight):
         global p1hurtbox, HEIGHT, WIDTH, p1x, p1y
-        p1hurtbox = pygame.Rect(p1x, p1y, (HEIGHT/ 2.5), (WIDTH/9))
+        p1hurtbox = pygame.Rect(p1x, p1y, standingheight, standingwidth)
         p1hurtbox.center = p1x, p1y + 107

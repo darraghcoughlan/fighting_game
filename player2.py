@@ -6,7 +6,7 @@ def sayhello():
 
 class p2():
     def setup(standingwidth, standingheight, crouchingwidth, crouchingheight):
-        global p2x, p2y, p2hurtbox, onground, crouchhurtbox, basep2hurtbox, knockbacked, death,  noknockback, yvelocityend, xvelocityend, jump, oldp2x, oldp2y, isblocking, okickout, p2health, WIDTH, HEIGHT, crouch,  upunchout, p2framecount, black, yellow, green, red
+        global p2x, p2y, p2hurtbox, instun, onground, crouchhurtbox, basep2hurtbox, knockbacked, death,  noknockback, yvelocityend, xvelocityend, jump, oldp2x, oldp2y, isblocking, okickout, p2health, WIDTH, HEIGHT, crouch,  upunchout, p2framecount, black, yellow, green, red
         size = HEIGHT, WIDTH = 1080, 1920
         p2x, p2y = ((WIDTH/ 10) * 9), (HEIGHT/ 10) * 7
         basep2hurtbox = pygame.Rect(p2x, p2y, standingwidth, standingheight)
@@ -32,6 +32,8 @@ class p2():
         yvelocityend = False
         xvelocityend = False
 
+        instun = False
+
         black = (0, 0, 0)
         yellow = (255, 255, 0)
         green = (0, 128, 0)
@@ -47,22 +49,24 @@ class p2():
 
     def gravity(floor):
         global p2y, HEIGHT, onground
-        if p2y < (HEIGHT/ 10) * 7:
+        if p2y < floor:
             p2y = p2y + 20
-        if p2y > (HEIGHT / 10 ) * 7 + floor:
-            p2y = (HEIGHT / 10) * 7
-        if p2y == (HEIGHT / 10) * 7 + floor:
+        if p2y > floor:
+            p2y = floor
+        if p2y == floor:
             onground = True
 
-    def move(moveby, movementspeed):
+    def move(moveby, movementspeed, floor, crouchingfloor):
         global p2x, p2y, crouch, HEIGHT
+        if instun == True:
+            moveby = moveby / 10
         moveby = moveby * movementspeed
         p2x = p2x + moveby
         if crouch == False:
             p2hurtbox.center = p2x, p2y
         if crouch == True:
-            p2y = (HEIGHT / 10) * 7
-            p2hurtbox.center = p2x, p2y + 96
+            p2y = floor
+            p2hurtbox.center = p2x, p2y + crouchingfloor
 
     def blocking():
         global isblocking, noknockback
@@ -165,7 +169,7 @@ class p2():
             p2.jumpvelocity(jumpspeed, jumpheight)
             jump = True
 
-    def fallover_death():
+    def fallover_death(standingwidth, standingheight):
         global p2hurtbox, HEIGHT, WIDTH, p2x, p2y
-        p2hurtbox = pygame.Rect(p2x, p2y, (HEIGHT/ 2.5), (WIDTH/ 9))
+        p2hurtbox = pygame.Rect(p2x, p2y, standingheight, standingwidth)
         p2hurtbox.center = p2x, p2y + 107

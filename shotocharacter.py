@@ -3,7 +3,7 @@ from pygame.key import start_text_input
 
 class variables():
     size = HEIGHT, WIDTH = 1080, 1920
-    floor = 0
+    floor = (HEIGHT/ 10) * 7
     crouchingfloor = 96
     movementspeed = 1
     jumpheight = HEIGHT / 8
