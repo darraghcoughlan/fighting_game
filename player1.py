@@ -23,6 +23,8 @@ class p1():
         oldp1x = 0
         oldp1y = 0
 
+        p1floor = 0
+
         death = False
 
         noknockback = False
@@ -47,7 +49,8 @@ class p1():
             p1health = p1health - damagedealt
 
     def gravity(floor):
-        global p1y, HEIGHT, onground
+        global p1y, HEIGHT, onground, p1floor
+        p1floor = floor
         if p1y < floor:
             p1y = p1y + 20
         if p1y > floor:
