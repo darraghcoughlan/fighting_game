@@ -6,7 +6,9 @@ import player1
 import player2
 import timer
 import shotocharacter
+import camera
 
+camera.setup()
 p1char = "shoto"
 p2char = "shoto"
 
@@ -97,6 +99,12 @@ if p2char == "shoto":
     p2standingkickstun = shotocharacter.stun.standingkick
     p2crouchingkickstun = shotocharacter.stun.crouchingkick
 
+    #damage
+    p2standingpunchdamage = shotocharacter.damage.standingpunch
+    p2crouchingpunchdamage = shotocharacter.damage.crouchingpunch
+    p2standingkickdamage = shotocharacter.damage.standingkick
+    p2crouchingkickdamage = shotocharacter.damage.crouchingkick
+
 if p1char == "shoto":
     #hurtbox
     p1standingwidth = shotocharacter.hurtbox.standingwidth
@@ -184,6 +192,13 @@ if p1char == "shoto":
     p1standingkickstun = shotocharacter.stun.standingkick
     p1crouchingkickstun = shotocharacter.stun.crouchingkick
 
+    #damage
+    p1standingpunchdamage = shotocharacter.damage.standingpunch
+    p1crouchingpunchdamage = shotocharacter.damage.crouchingpunch
+    p1standingkickdamage = shotocharacter.damage.standingkick
+    p1crouchingkickdamage = shotocharacter.damage.crouchingkick
+
+
 #pygame setup
 numofp1wins = 0
 numofp2wins = 0
@@ -204,10 +219,10 @@ blue = (0, 0, 255)
 dimmedblue = (0, 0, 100)
 
 
-p1healthbackgroundshadow = pygame.Rect((HEIGHT/ 54), 20, (100*9), 40)
-p1healthbackground = pygame.Rect((HEIGHT/ 54)-5, 15, (100 * 9) + 20, 60)
-p2healthbackground = pygame.Rect(((HEIGHT/ 54) * 50) - 15 , 15, (100 * 9) + 20, 60)
-p2healthbackgroundshadow = pygame.Rect((HEIGHT/ 54) * 50, 20, 100 * 9, 40)
+p1healthbackgroundshadow = pygame.Rect((HEIGHT/ 54), 75, (100*8), 40)
+p1healthbackground = pygame.Rect((HEIGHT/ 54)-5, 70, (100 * 8) + 20, 60)
+p2healthbackground = pygame.Rect(((HEIGHT/ 54) * 55) - 15 , 70, (100 * 8) + 20, 60)
+p2healthbackgroundshadow = pygame.Rect((HEIGHT/ 54) * 55, 75, 100 * 8, 40)
 
 clock = pygame.time.Clock()
 p1gothit = False
@@ -253,6 +268,9 @@ def resetvars():
 resetvars()
 #timer setup
 timer.timer.setup()
+
+
+
 
 #character setup
 player1.p1.setup(p1standingwidth, p1standingheight, p1crouchingwidth, p1crouchingheight)
@@ -357,9 +375,9 @@ def qkickactive(activeframes):
     p1framecount = p1framecount + 1
     if player1.crouch == False:
         if p1facing == 1:
-            player1.p1.move(5)
+            player1.p1.move(5, p1movementspeed, p1floor, p1crouchingfloor)
         if p1facing == 0: 
-            player1.p1.move(-5)
+            player1.p1.move(-5, p1movementspeed, p1floor, p1crouchingfloor)
     if p1framecount >= activeframes:
         player1.qkickout = False
         p1framecount = 0 
@@ -380,9 +398,9 @@ def okickactive(activeframes):
     p2framecount = p2framecount + 1
     if player2.crouch == False:
         if p2facing == 1:
-            player2.p2.move(5, p2movementspeed)
+            player2.p2.move(5, p2movementspeed, p2floor, p2crouchingfloor)
         if p2facing == 0:
-            player2.p2.move(-5, p2movementspeed)
+            player2.p2.move(-5, p2movementspeed, p2floor, p2crouchingfloor)
     if p2framecount >= activeframes:
         player2.okickout = False
         p2framecount = 0
@@ -395,7 +413,7 @@ def epunchstartup(startupframes):
     global p1framecount, epunch, p1inmove, p1facing
     p1framecount = p1framecount + 1
     if p1framecount >= startupframes:
-        player1.p1.epunch(p1facing, p1standingpunchwidth, p1standingpunchheight, p1standingpunchy, p1standingpunchx, p1crouchingpunchwidth, p1crouchingpunchheight, p1crouchingpunchx, p1crouchingpunchy)
+        player1.p1.epunch(p1facing, p1standingpunchwidth, p1standingpunchheight, p1standingpunchx, p1standingpunchy, p1crouchingpunchwidth, p1crouchingpunchheight, p1crouchingpunchx, p1crouchingpunchy)
         p1framecount = 0
         epunch = False
 
@@ -430,10 +448,10 @@ def p1stayin():
     p1stayinleftx = player1.p1x - p1standingwidth / 2
     p1stayinrightx = player1.p1x + p1standingwidth / 2
     if p1stayinleftx <= 10:
-        player1.p1x = player1.p1x + 10
+        player1.p1x = ( - p1stayinleftx) + (p1standingwidth / 2) + 11
         p1atedge = True
     if p1stayinrightx >= WIDTH - 10:
-        player1.p1x = player1.p1x - 10
+        player1.p1x = - (( p1stayinrightx) + (p1standingwidth / 2) - 11)
         p1atedge = True
     elif p1stayinleftx >= 30 and p1stayinrightx <= WIDTH - 30:
         p1atedge = False
@@ -519,16 +537,13 @@ def p2stun(stunframes):
 
 #attack interupted
 def p1interupted():
-    global p1framecount
-    player1.qkickout = False
-    player1.epunchout = False
-    p1framecount = 0
+    global p1inmove
+    #p2inmove = False
+    
 
 def p2interupted():
-    global p2framecount
-    player2.okickout = False
-    player2.upunchout = False
-    p2framecount = 0
+    global p2inmove
+    #p2inmove = False
 
 #hitboxes and hitdetection
 #p1 got hit means player 2 got hit
@@ -543,9 +558,9 @@ def epunchhitbox():
             if player2.noknockback == False:
                 epunchknockback = True
             if player1.crouch == False:
-                player2.p2.takedamage(100)
+                player2.p2.takedamage(p1standingpunchdamage)
             if player1.crouch == True:
-                player2.p2.takedamage(100)
+                player2.p2.takedamage(p1crouchingpunchdamage)
             p1gothit = True
 
 def qkickhitbox():
@@ -557,9 +572,9 @@ def qkickhitbox():
             if player2.noknockback == False:
                 qkickknockback = True
             if player1.crouch == False:
-                player2.p2.takedamage(4)
+                player2.p2.takedamage(p1standingkickdamage)
             if player1.crouch == True:
-                player2.p2.takedamage(2)
+                player2.p2.takedamage(p1crouchingkickdamage)
             p1gothit = True
 
 def upunchhitbox():
@@ -574,10 +589,10 @@ def upunchhitbox():
             if player1.noknockback == False:
                 upunchknockback = True
             if player2.crouch == False:
-                player1.p1.takedamage(100)
+                player1.p1.takedamage(p2standingpunchdamage)
                 p1standingpunchinstun = True
             if player2.crouch == True:
-                player1.p1.takedamage(5)
+                player1.p1.takedamage(p2crouchingpunchdamage)
                 p1crouchingpunchinstun = True
             p2gothit = True
 
@@ -592,14 +607,15 @@ def okickhitbox():
             if player1.noknockback == False:
                 okickknockback = True
             if player2.crouch == False:
-                player1.p1.takedamage(4)
+                player1.p1.takedamage(p2standingkickdamage)
                 p1standingkickinstun = True
             if player2.crouch == True:
-                player1.p1.takedamage(2)
+                player1.p1.takedamage(p2crouchingkickdamage)
                 p1crouchingkickinstun = True
             p2gothit = True
 
-
+#camerasetup
+camera.cameraypositionpassive(player1.p1y, player2.p2y, p1floor, p2floor)
 #main pygame loop 
 pygame.init()
 
@@ -1063,29 +1079,32 @@ while True:
             p2inmove = False
             newtimer = True
 
+    #camera
+    camera.cameraypositionpassive(player1.p1y, player2.p2y, p1floor, p2floor)
+
     #drawing
 
 
     pygame.draw.rect(screen, white, p1healthbackground, 0)
     pygame.draw.rect(screen, gray, p1healthbackgroundshadow, 0)
-    pygame.draw.rect(screen, red, pygame.Rect((HEIGHT/ 54), 20, player1.p1health * 9, 40), 0)
+    pygame.draw.rect(screen, red, pygame.Rect((HEIGHT/ 54), 75, player1.p1health * 8, 40), 0)
     pygame.draw.rect(screen, white, p2healthbackground, 0)
     pygame.draw.rect(screen, gray, p2healthbackgroundshadow, 0)
-    pygame.draw.rect(screen, red, pygame.Rect(((HEIGHT/54) * 50) + ((100 * 9) - player2.p2health * 9), 20, player2.p2health * 9, 40), 0)
+    pygame.draw.rect(screen, red, pygame.Rect(((HEIGHT/54) * 55) + ((100 * 8) - player2.p2health * 8), 75, player2.p2health * 8, 40), 0)
     pygame.draw.circle(screen, white, (75, 125), 30, 0)
     pygame.draw.circle(screen, white, (150, 125), 30, 0)
     pygame.draw.circle(screen, white, (1845, 125), 30, 0)
     pygame.draw.circle(screen, white, (1770, 125), 30, 0)
 
     if p1inmove == False and player1.instun == False:
-        pygame.draw.rect(screen, yellow, player1.p1hurtbox, 2)
+        pygame.draw.rect(screen, yellow, (player1.p1hurtbox.x,player1.p1hurtbox.y + camera.yoffset, player1.p1hurtbox.width, player1.p1hurtbox.height), 2)
     elif p1inmove == True or player1.instun == True:
-        pygame.draw.rect(screen, dimmedyellow, player1.p1hurtbox, 2)
+        pygame.draw.rect(screen, dimmedyellow, (player1.p1hurtbox.x,player1.p1hurtbox.y + camera.yoffset, player1.p1hurtbox.width, player1.p1hurtbox.height), 2)
     
     if p2inmove == False:
-        pygame.draw.rect(screen, blue, player2.p2hurtbox, 2)
+        pygame.draw.rect(screen, blue, (player2.p2hurtbox.x, player2.p2hurtbox.y + camera.yoffset, player2.p2hurtbox.width, player2.p2hurtbox.height), 2)
     elif p2inmove == True:
-        pygame.draw.rect(screen, dimmedblue, player2.p2hurtbox, 2)
+        pygame.draw.rect(screen, dimmedblue, (player2.p2hurtbox.x, player2.p2hurtbox.y + camera.yoffset, player2.p2hurtbox.width, player2.p2hurtbox.height), 2)
     
     if numofp1wins >=1:
         pygame.draw.circle(screen, yellow, (75,125), 25, 0)

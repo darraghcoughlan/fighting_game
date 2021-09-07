@@ -6,7 +6,7 @@ class variables():
     floor = (HEIGHT/ 10) * 7
     crouchingfloor = 96
     movementspeed = 1
-    jumpheight = HEIGHT / 8
+    jumpheight = - HEIGHT / 4
     jumpspeed = 75
 
 class hurtbox():
