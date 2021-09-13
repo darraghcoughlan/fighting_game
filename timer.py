@@ -32,3 +32,5 @@ class timer():
         if countdowntime == 0:
             counted = True
             go = True
+        if countdowntime != 0:
+            counted = False

@@ -132,14 +132,11 @@ class p1():
             yvelocityend = True
 
     def jumpvelocity(speed, destination):
-        global p1y, onground
-        if p1y > destination:
+        global p1y, onground, oldp1y
+        if p1y >= destination:
             p1y = p1y - speed
-            if jump == True:
-                if p1y <= destination:
-                    onground = False
-            else:
-                onground = False
+        else:
+            onground = False
 
     def xvelocityright(speed, destination):
         global p1x, oldp1x, xvelocityend, death
