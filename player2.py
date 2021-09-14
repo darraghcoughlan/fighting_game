@@ -67,6 +67,10 @@ class p2():
         if crouch == True:
             p2y = floor
             p2hurtbox.center = p2x, p2y + crouchingfloor
+        
+    def stayin(moveby):
+        global crouch, p2x, p2y
+        p2x = p2x + moveby
 
     def blocking():
         global isblocking, noknockback

@@ -70,6 +70,10 @@ class p1():
             p1y = floor
             p1hurtbox.center = p1x, p1y + crouchingfloor
 
+    def stayin(moveby):
+        global p1x
+        p1x = p1x + moveby
+
     def blocking():
         global isblocking, noknockback
         isblocking = True

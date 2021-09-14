@@ -76,7 +76,7 @@ class stun():
     crouchingkick = 15
 
 class standingkickframedata():
-    startup = 1
+    startup = 10
     active = 10
     endlag = 15
 
