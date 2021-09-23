@@ -30,24 +30,32 @@ if p2char == "shoto":
     p2standingpunchheight = shotocharacter.standingpuchhitbox.height
     p2standingpunchy = shotocharacter.standingpuchhitbox.y
     p2standingpunchx = shotocharacter.standingpuchhitbox.x
+    p2standingpunchmovex = shotocharacter.standingpuchhitbox.movex
+    p2standingpunchmovey = shotocharacter.standingpuchhitbox.movey
 
     #crouching punch hitbox
     p2crouchingpunchwidth = shotocharacter.crouchingpunchhitbox.width
     p2crouchingpunchheight = shotocharacter.crouchingpunchhitbox.height
     p2crouchingpunchy = shotocharacter.crouchingpunchhitbox.y
     p2crouchingpunchx = shotocharacter.crouchingpunchhitbox.x
+    p2crouchingpunchmovex = shotocharacter.crouchingpunchhitbox.movex
+    p2crouchingpunchmovey = shotocharacter.crouchingpunchhitbox.movey
 
     #standing kick hitbox
     p2standingkickwidth = shotocharacter.standingkickhitbox.width
     p2standingkickheight = shotocharacter.standingkickhitbox.height
     p2standingkicky = shotocharacter.standingkickhitbox.y
     p2standingkickx = shotocharacter.standingkickhitbox.x
+    p2standingkickmovex = shotocharacter.standingkickhitbox.movex
+    p2standingkickmovey = shotocharacter.standingkickhitbox.movey
 
     #crouch kick hitbox
     p2crouchingkickwidth = shotocharacter.crouchingkickhitbox.width
     p2crouchingkickheight = shotocharacter.crouchingkickhitbox.height
     p2crouchingkicky = shotocharacter.crouchingkickhitbox.y
     p2crouchingkickx = shotocharacter.crouchingkickhitbox.x
+    p2crouchingkickmovex = shotocharacter.crouchingkickhitbox.movex
+    p2crouchingkickmovey = shotocharacter.crouchingkickhitbox.movey
 
     #standingpunch knockback
     p2standingpunchknockbackxspeed = shotocharacter.standingpunchknockback.xspeed
@@ -123,24 +131,32 @@ if p1char == "shoto":
     p1standingpunchheight = shotocharacter.standingpuchhitbox.height
     p1standingpunchy = shotocharacter.standingpuchhitbox.y
     p1standingpunchx = shotocharacter.standingpuchhitbox.x
+    p1standingpunchmovex = shotocharacter.standingpuchhitbox.movex
+    p1standingpunchmovey = shotocharacter.standingpuchhitbox.movey
 
     #crouching punch hitbox
     p1crouchingpunchwidth = shotocharacter.crouchingpunchhitbox.width
     p1crouchingpunchheight = shotocharacter.crouchingpunchhitbox.height
     p1crouchingpunchy = shotocharacter.crouchingpunchhitbox.y
     p1crouchingpunchx = shotocharacter.crouchingpunchhitbox.x
+    p1crouchingpunchmovex = shotocharacter.crouchingpunchhitbox.movex
+    p1crouchingpunchmovey = shotocharacter.crouchingpunchhitbox.movey
 
     #standing kick hitbox
     p1standingkickwidth = shotocharacter.standingkickhitbox.width
     p1standingkickheight = shotocharacter.standingkickhitbox.height
     p1standingkicky = shotocharacter.standingkickhitbox.y
     p1standingkickx = shotocharacter.standingkickhitbox.x
+    p1standingkickmovex = shotocharacter.standingkickhitbox.movex
+    p1standingkickmovey = shotocharacter.standingkickhitbox.movey
 
     #crouch kick hitbox
     p1crouchingkickwidth = shotocharacter.crouchingkickhitbox.width
     p1crouchingkickheight = shotocharacter.crouchingkickhitbox.height
     p1crouchingkicky = shotocharacter.crouchingkickhitbox.y
     p1crouchingkickx = shotocharacter.crouchingkickhitbox.x
+    p1crouchingkickmovex = shotocharacter.crouchingkickhitbox.movex
+    p1crouchingkickmovey = shotocharacter.crouchingkickhitbox.movey
 
     #standingpunch knockback
     p1standingpunchknockbackxspeed = shotocharacter.standingpunchknockback.xspeed
@@ -216,24 +232,32 @@ if p1char == "sword":
     p1standingpunchheight = swordchar.standingpuchhitbox.height
     p1standingpunchy = swordchar.standingpuchhitbox.y
     p1standingpunchx = swordchar.standingpuchhitbox.x
+    p1standingpunchmovex = swordchar.standingpuchhitbox.movex
+    p1standingpunchmovey = swordchar.standingpuchhitbox.movey
 
     #crouching punch hitbox
     p1crouchingpunchwidth = swordchar.crouchingpunchhitbox.width
     p1crouchingpunchheight = swordchar.crouchingpunchhitbox.height
     p1crouchingpunchy = swordchar.crouchingpunchhitbox.y
     p1crouchingpunchx = swordchar.crouchingpunchhitbox.x
+    p1crouchingpunchmovex = swordchar.crouchingpunchhitbox.movex
+    p1crouchingpunchmovey = swordchar.crouchingpunchhitbox.movey
 
     #standing kick hitbox
     p1standingkickwidth = swordchar.standingkickhitbox.width
     p1standingkickheight = swordchar.standingkickhitbox.height
     p1standingkicky = swordchar.standingkickhitbox.y
     p1standingkickx = swordchar.standingkickhitbox.x
+    p1standingkickmovex = swordchar.standingkickhitbox.movex
+    p1standingkickmovey = swordchar.standingkickhitbox.movey
 
     #crouch kick hitbox
     p1crouchingkickwidth = swordchar.crouchingkickhitbox.width
     p1crouchingkickheight = swordchar.crouchingkickhitbox.height
     p1crouchingkicky = swordchar.crouchingkickhitbox.y
     p1crouchingkickx = swordchar.crouchingkickhitbox.x
+    p1crouchingkickmovex = swordchar.crouchingkickhitbox.movex
+    p1crouchingkickmovey = swordchar.crouchingkickhitbox.movey
 
     #standingpunch knockback
     p1standingpunchknockbackxspeed = swordchar.standingpunchknockback.xspeed
@@ -515,7 +539,7 @@ def epunchstartup(startupframes):
     global p1framecount, epunch, p1inmove, p1facing
     p1framecount = p1framecount + 1
     if p1framecount >= startupframes:
-        player1.p1.epunch(p1facing, p1standingpunchwidth, p1standingpunchheight, p1standingpunchx, p1standingpunchy, p1crouchingpunchwidth, p1crouchingpunchheight, p1crouchingpunchx, p1crouchingpunchy)
+        player1.p1.epunch(p1facing, p1standingpunchwidth, p1standingpunchheight, p1standingpunchx, p1standingpunchy, p1crouchingpunchwidth, p1crouchingpunchheight, p1crouchingpunchx, p1crouchingpunchy, p1standingpunchmovex, p1standingpunchmovey, p1crouchingpunchmovex, p1crouchingpunchmovex)
         p1framecount = 0
         epunch = False
 

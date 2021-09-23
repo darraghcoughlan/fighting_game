@@ -96,31 +96,47 @@ class p1():
         p1hurtbox.center = p1x, p1y
         crouch = False
 
-    def epunch(p1facing, standingwidth, standingheight, standingx, standingy, crouchingwidth, crouchingheight, crouchingx, crouchingy):
+    def epunch(p1facing, standingwidth, standingheight, standingx, standingy, crouchingwidth, crouchingheight, crouchingx, crouchingy, Smovehitboxx, Smovehitboxy, Cmovehitboxx, Cmovehitboxy):
         global epunchout, hitbox, crouch
         if p1facing == 1:
             if crouch == False:
+                standingx = standingx + Smovehitboxx
+                standingy = standingy + Smovehitboxy
                 hitbox = pygame.Rect(p1hurtbox.centerx + standingx, p1hurtbox.centery + standingy, standingwidth, standingheight)
             if crouch == True:
+                crouchingx = crouchingx + Cmovehitboxx
+                crouchingy = crouchingy + Cmovehitboxy
                 hitbox = pygame.Rect(p1hurtbox.centerx + crouchingx ,p1hurtbox.centery + crouchingy, crouchingwidth, crouchingheight)
         if p1facing == 0:
             if crouch == False:
+                standingx = standingx - Smovehitboxx
+                standingy = standingy + Smovehitboxy
                 hitbox = pygame.Rect(p1hurtbox.centerx - standingwidth - standingx, p1hurtbox.centery + standingy, standingwidth, standingheight)
             if crouch == True:
+                crouchingx = crouchingx - Cmovehitboxx
+                crouchingy = crouchingy + Cmovehitboxy
                 hitbox = pygame.Rect(p1hurtbox.centerx - crouchingwidth - crouchingx, p1hurtbox.centery + crouchingy, crouchingwidth, crouchingheight)
         epunchout = True
     
-    def qkick(p1facing, standingwidth, standingheight, standingx, standingy, crouchingwidth, crouchingheight, crouchingx, crouchingy):
+    def qkick(p1facing, standingwidth, standingheight, standingx, standingy, crouchingwidth, crouchingheight, crouchingx, crouchingy, Smovehitboxx, Smovehitboxy, Cmovehitboxx, Cmovehitboxy):
         global qkickout, hitbox, crouch
         if p1facing == 1:
             if crouch == False:
+                standingx = standingx + Smovehitboxx
+                standingy = standingy + Smovehitboxy
                 hitbox = pygame.Rect(p1hurtbox.centerx + standingx, p1hurtbox.centery + standingy, standingwidth, standingheight)
             if crouch == True:
+                crouchingx = crouchingx + Cmovehitboxx
+                crouchingy = crouchingy + Cmovehitboxx
                 hitbox = pygame.Rect(p1hurtbox.centerx + crouchingx, p1hurtbox.centery + crouchingy, crouchingwidth, crouchingheight)
         if p1facing == 0:
             if crouch == False:
+                standingx = standingx - Smovehitboxx
+                standingy = standingy + Smovehitboxy
                 hitbox = pygame.Rect(p1hurtbox.centerx - standingwidth - standingx, p1hurtbox.centery + standingy, standingwidth, standingheight)
             if crouch == True:
+                crouchingx = crouchingx - Cmovehitboxx
+                crouchingy = crouchingy + Cmovehitboxy
                 hitbox = pygame.Rect(p1hurtbox.centerx - crouchingwidth - crouchingx, p1hurtbox.centery + crouchingy, crouchingwidth, crouchingheight)
         qkickout = True
 

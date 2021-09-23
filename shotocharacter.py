@@ -20,24 +20,32 @@ class standingpuchhitbox():
     height = 50
     y = - 85
     x = 0
+    movex = 0
+    movey = 0
 
 class crouchingpunchhitbox():
     width = 225
     height = 50
     y = -85
     x = 0
+    movex = 0
+    movey = 0
 
 class standingkickhitbox():
     width = 300
     height = 75
     y = 20
     x = 0
+    movex = 0
+    movey = 0
 
 class crouchingkickhitbox():
     width = 350
     height = 50
     y = 65
     x = 0    
+    movex = 0
+    movey = 0
 
 class standingpunchknockback():
     xspeed = 10
