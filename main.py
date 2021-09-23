@@ -9,7 +9,7 @@ import shotocharacter, swordchar
 import camera
 
 camera.setup()
-p1char = "shoto"
+p1char = "sword"
 p2char = "shoto"
 
 if p2char == "shoto":
@@ -664,16 +664,19 @@ def epunchhitbox():
         if player1.hitbox.colliderect(player2.p2hurtbox):
             if p2inmove == True:
                 p2interupted()
-            player2.instun = True
+            if player2.noknockback == False:
+                player2.instun = True
             p2framecount = 0
             if player2.noknockback == False:
                 epunchknockback = True
             if player1.crouch == False:
                 player2.p2.takedamage(p1standingpunchdamage)
-                p2standingpunchinstun = True
+                if player2.noknockback == False:
+                    p2standingpunchinstun = True
             if player1.crouch == True:
                 player2.p2.takedamage(p1crouchingpunchdamage)
-                p2crouchingpunchinstun = True
+                if player2.noknockback == False:
+                    p2crouchingpunchinstun = True
             p1gothit = True
 
 def qkickhitbox():
@@ -683,16 +686,19 @@ def qkickhitbox():
         if player1.hitbox.colliderect(player2.p2hurtbox):
             if p2inmove == True:
                 p2interupted()
-            player2.instun = True
+            if player2.noknockback == False:
+                player2.instun = True
             p2framecount = 0
             if player2.noknockback == False:
                 qkickknockback = True
             if player1.crouch == False:
                 player2.p2.takedamage(p1standingkickdamage)
-                p2standingkickinstun = True
+                if player2.noknockback == False:
+                    p2standingkickinstun = True
             if player1.crouch == True:
                 player2.p2.takedamage(p1crouchingkickdamage)
-                p2crouchingkickinstun = True
+                if player2.noknockback == False:
+                    p2crouchingkickinstun = True
             p1gothit = True
 
 def upunchhitbox():
@@ -702,16 +708,19 @@ def upunchhitbox():
         if player2.hitbox.colliderect(player1.p1hurtbox):
             if p1inmove == True:
                 p1interupted()
-            player1.instun = True
+            if player1.noknockback == False:
+                player1.instun = True
             p1framecount = 0
             if player1.noknockback == False:
                 upunchknockback = True
             if player2.crouch == False:
                 player1.p1.takedamage(p2standingpunchdamage)
-                p1standingpunchinstun = True
+                if player1.noknockback == False:
+                    p1standingpunchinstun = True
             if player2.crouch == True:
                 player1.p1.takedamage(p2crouchingpunchdamage)
-                p1crouchingpunchinstun = True
+                if player1.noknockback == False:
+                    p1crouchingpunchinstun = True
             p2gothit = True
 
 def okickhitbox():
@@ -721,16 +730,19 @@ def okickhitbox():
         if player2.hitbox.colliderect(player1.p1hurtbox):
             if p1inmove == True:
                 p1interupted()
-            player1.instun = True
+            if player1.noknockback == False:
+                player1.instun = True
             p1framecount = 0
             if player1.noknockback == False:
                 okickknockback = True
             if player2.crouch == False:
                 player1.p1.takedamage(p2standingkickdamage)
-                p1standingkickinstun = True
+                if player1.noknockback == False:
+                    p1standingkickinstun = True
             if player2.crouch == True:
                 player1.p1.takedamage(p2crouchingkickdamage)
-                p1crouchingkickinstun = True
+                if player1.noknockback == False:
+                    p1crouchingkickinstun = True
             p2gothit = True
 
 #camerasetup
